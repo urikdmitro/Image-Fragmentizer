@@ -57,4 +57,7 @@ $(BUILD_DIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(GTK_FLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
+	rm -rf $(BUILD_DIR)/src $(TARGET)
+
+hard_clean:
 	rm -rf $(BUILD_DIR) $(TARGET)

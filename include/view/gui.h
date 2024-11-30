@@ -24,6 +24,9 @@ private:
         ImVec2 fragment_image_size;
         ImVec2 variance_graph_size;
         ImVec2 intensity_graph_size;
+
+        inline bool operator==(const InputData &rhs);
+        inline bool operator!=(const InputData &rhs);
     };
 
     struct OutputData
@@ -35,10 +38,10 @@ private:
     };
 
     const OpenGLContext &opengl_context;
-    const FragmentizerController &controller;
+    FragmentizerController &controller;
     ImVec4 accent_color;
 
-    InputData poll_input_helper_input_data;
+    InputData validated_input_data;
     InputData input_data;
     OutputData output_data;
 
@@ -52,9 +55,14 @@ private:
     void RerunFragmentationButtonCallback();
 
     void SetColorStyle();
+    bool HasInputDataChanged();
+    void ValidateInputData();
 
 public:
-    Gui(const OpenGLContext &opengl_context, const FragmentizerController &controller);
+    Gui(
+        const OpenGLContext &opengl_context,
+        FragmentizerController &controller
+    );
     ~Gui();
 
     void OnRender();

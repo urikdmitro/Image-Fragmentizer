@@ -1,32 +1,37 @@
-#ifndef SEGMENTIZER_H_
-#define SEGMENTIZER_H_
+#ifndef MODEL_FRAGMENTIZER_H_
+#define MODEL_FRAGMENTIZER_H_
 
 #include <stdint.h>
+#include <map>
 #include "image.h"
 
 struct FragmentInfo
 {
+    struct Less
+    {
+        bool operator()(const FragmentInfo &a, const FragmentInfo &b) const;
+    };
+
     uint8_t fragments_count;
     uint8_t fragment_number;
 
     FragmentInfo() : FragmentInfo(0, 0) {}
-    FragmentInfo(uint8_t fragments_count, uint8_t fragment_number)
-    {
-        this->fragment_number = fragment_number;
-        this->fragments_count = fragments_count;
-    }
+    FragmentInfo(uint8_t fragments_count, uint8_t fragment_number);
 };
 
 class Fragmentizer
 {
 private:
-    const Image &image;
+    Image image;
+    std::map<FragmentInfo, Image, FragmentInfo::Less> fragments_cache;
 
 public:
+    Fragmentizer();
     Fragmentizer(const Image &image);
+    void SetNewImage(const Image &image);
 
-    Image GetSegment(FragmentInfo segment_info);
-    const Image &GetOrigin();
+    const Image &GetFragment(FragmentInfo fragment_info);
+    const Image &GetImage();
 };
 
-#endif // SEGMENTIZER_H_
+#endif // MODEL_FRAGMENTIZER_H_

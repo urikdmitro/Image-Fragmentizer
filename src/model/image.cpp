@@ -3,62 +3,77 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+Image::Image()
+    : raw_data(nullptr)
+    , width(0)
+    , height(0)
+    , channels(0)
+{}
+
 Image::Image(std::string path_to_image)
 {
-    raw_data = stbi_load(path_to_image.c_str(),
-                         reinterpret_cast<int *>(&width),
-                         reinterpret_cast<int *>(&height),
-                         reinterpret_cast<int *>(&channels),
-                         0);
+    raw_data = stbi_load(
+        path_to_image.c_str(),
+        reinterpret_cast<int *>(&width),
+        reinterpret_cast<int *>(&height),
+        reinterpret_cast<int *>(&channels),
+        0
+    );
 }
 
-Image::Image(const Image &raw_image)
-    : width(raw_image.width), height(raw_image.height), channels(raw_image.channels)
+Image::Image(const Image &image)
+    : width(image.width)
+    , height(image.height)
+    , channels(image.channels)
 {
     this->raw_data = (uint8_t*)STBI_MALLOC(width * height * channels);
-    std::copy(raw_image.raw_data,
-              raw_image.raw_data + (width * height * channels),
-              this->raw_data);
+    std::copy(
+        image.raw_data,
+        image.raw_data + (width * height * channels),
+        this->raw_data
+    );
 }
 
-Image::Image(Image &&raw_image)
+Image::Image(Image &&image)
 {
-    this->raw_data = raw_image.raw_data;
-    this->width = raw_image.width;
-    this->height = raw_image.height;
-    this->channels = raw_image.channels;
+    this->raw_data = image.raw_data;
+    this->width = image.width;
+    this->height = image.height;
+    this->channels = image.channels;
 
-    raw_image.raw_data = nullptr;
-    raw_image.width = 0;
-    raw_image.height = 0;
-    raw_image.channels = 0;
+    image.raw_data = nullptr;
+    image.width = 0;
+    image.height = 0;
+    image.channels = 0;
 }
 
-Image &Image::operator=(const Image &raw_image)
+Image &Image::operator=(const Image &image)
 {
-    this->width = raw_image.width;
-    this->height = raw_image.height;
-    this->channels = raw_image.channels;
+    this->width = image.width;
+    this->height = image.height;
+    this->channels = image.channels;
 
     this->raw_data = (uint8_t*)STBI_MALLOC(width * height * channels);
-    std::copy(raw_image.raw_data,
-              raw_image.raw_data + (width * height * channels),
-              this->raw_data);
+    std::copy(
+        image.raw_data,
+        image.raw_data + (width * height * channels),
+        this->raw_data
+    );
 
     return *this;
 }
 
-Image &Image::operator=(Image &&raw_image)
+Image &Image::operator=(Image &&image)
 {
-    this->raw_data = raw_image.raw_data;
-    this->width = raw_image.width;
-    this->height = raw_image.height;
-    this->channels = raw_image.channels;
+    this->raw_data = image.raw_data;
+    this->width = image.width;
+    this->height = image.height;
+    this->channels = image.channels;
 
-    raw_image.raw_data = nullptr;
-    raw_image.width = 0;
-    raw_image.height = 0;
-    raw_image.channels = 0;
+    image.raw_data = nullptr;
+    image.width = 0;
+    image.height = 0;
+    image.channels = 0;
 
     return *this;
 }

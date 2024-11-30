@@ -14,7 +14,8 @@ int main() {
     FragmentizerController controller(fragmentizer);
     Gui gui(opengl_context, controller);
 
-    while (!opengl_context.ShouldClose()) {
+    while (!opengl_context.ShouldClose())
+    {
         opengl_context.SwapBuffer();
         opengl_context.PollEvents();
         opengl_context.Clear();

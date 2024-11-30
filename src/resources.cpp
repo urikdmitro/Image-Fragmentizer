@@ -2,7 +2,9 @@
 #include <string>
 
 
-const std::string kAssetsFolder("/home/dmitro/Documents/Projects/C/Image/assets");
+const std::string kAssetsFolder(
+    "/home/dmitro/Documents/Projects/C/Image/assets"
+);
 
 std::string Resources::GetAssetsFolderPath()
 {

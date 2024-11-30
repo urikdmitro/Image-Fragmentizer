@@ -7,7 +7,12 @@
 class Texture
 {
 private:
-    static GLuint GenerateOpenGLTexture(const void* data, GLsizei x, GLsizei y, int channels_number);
+    static GLuint GenerateOpenGLTexture(
+        const void* data,
+        GLsizei x,
+        GLsizei y,
+        int channels_number
+    );
     static GLuint DuplicateOpenGLTexture(GLuint id, GLsizei x, GLsizei y);
 
     GLuint id;

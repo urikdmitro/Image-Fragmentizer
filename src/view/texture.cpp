@@ -98,28 +98,39 @@ Texture::~Texture()
     }
 }
 
-GLuint Texture::GenerateOpenGLTexture(const void* data, GLsizei x, GLsizei y, int channels_number)
-{
+GLuint Texture::GenerateOpenGLTexture(
+    const void* data,
+    GLsizei x,
+    GLsizei y,
+    int channels_number
+)
+    {
     GLuint id;
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(
+        GL_TEXTURE_2D,
+        GL_TEXTURE_MIN_FILTER,
+        GL_LINEAR_MIPMAP_LINEAR
+    );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     int channel_format = channels_number == 4 ? GL_RGBA : GL_RGB;
 
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 channel_format,
-                 x,
-                 y,
-                 0,
-                 channel_format,
-                 GL_UNSIGNED_BYTE,
-                 data);
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        channel_format,
+        x,
+        y,
+        0,
+        channel_format,
+        GL_UNSIGNED_BYTE,
+        data
+    );
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -132,15 +143,17 @@ GLuint Texture::DuplicateOpenGLTexture(GLuint id, GLsizei x, GLsizei y)
     glGenTextures(1, &duplicated_texture_id);
     glBindTexture(GL_TEXTURE_2D, duplicated_texture_id);
 
-    glCopyImageSubData(id,
-                       GL_TEXTURE_2D,
-                       0, 0, 0, 0,
-                       duplicated_texture_id,
-                       GL_TEXTURE_2D,
-                       0, 0, 0, 0,
-                       x,
-                       y,
-                       1);
+    glCopyImageSubData(
+        id,
+        GL_TEXTURE_2D,
+        0, 0, 0, 0,
+        duplicated_texture_id,
+        GL_TEXTURE_2D,
+        0, 0, 0, 0,
+        x,
+        y,
+        1
+    );
 
     return duplicated_texture_id;
 }

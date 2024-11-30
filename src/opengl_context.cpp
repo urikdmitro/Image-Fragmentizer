@@ -13,7 +13,14 @@ OpenGLContext::OpenGLContext()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    this->glfw_window = glfwCreateWindow(1024, 720, "Image Segmentation Tool", nullptr, nullptr);
+    this->glfw_window = glfwCreateWindow(
+        1024,
+        720,
+        "Image Segmentation Tool",
+        nullptr,
+        nullptr
+    );
+
     if (!this->glfw_window)
     {
         std::cerr << "Failed to create GLFW window\n";
@@ -55,7 +62,9 @@ void OpenGLContext::SwapBuffer()
 void OpenGLContext::Clear()
 {
     int display_w, display_h;
+
     glfwGetFramebufferSize(this->glfw_window, &display_w, &display_h);
+
     glViewport(0, 0, display_w, display_h);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);

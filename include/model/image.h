@@ -11,12 +11,15 @@ struct Image
     uint32_t height;
     uint32_t channels;
 
+    Image();
     Image(std::string path_to_image);
-    Image(const Image &raw_image);
-    Image(Image &&raw_image);
-    Image &operator=(const Image &raw_image);
-    Image &operator=(Image &&raw_image);
     ~Image();
+
+    Image(const Image &image);
+    Image(Image &&image);
+
+    Image &operator=(const Image &image);
+    Image &operator=(Image &&image);
 };
 
 #endif // IMAGE_H_

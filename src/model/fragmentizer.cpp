@@ -1,5 +1,6 @@
 #include "model/fragmentizer.h"
 
+#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -7,25 +8,60 @@
 #include <string>
 #include "model/image.h"
 
-#define UINT8_T_MAX 256
-#define R_OFFSET 0
-#define G_OFFSET 1
-#define B_OFFSET 2
-#define A_OFFSET 3
+const uint32_t kUInt8Max = 256;
+const uint8_t kROffset = 0;
+const uint8_t kGOffset = 1;
+const uint8_t kBOffset = 2;
+const uint8_t kAOffset = 3;
 
-#define IS_IN_BOUNDS(VALUE, LOWER_BOUND, UPPER_BOUND) \
-            (VALUE >= LOWER_BOUND && VALUE < UPPER_BOUND)
+bool FragmentInfo::Less::operator()(
+    const FragmentInfo &a,
+    const FragmentInfo &b
+) const
+{
+    return (a.fragments_count << 8 | a.fragment_number)
+            < (b.fragments_count << 8 | b.fragment_number);
+}
 
+FragmentInfo::FragmentInfo(uint8_t fragments_count, uint8_t fragment_number)
+{
+    this->fragment_number = fragment_number;
+    this->fragments_count = fragments_count;
+}
+
+template <typename T>
+inline bool IsInBounds(T value, T lower_bound, T upper_bound)
+{
+    return value >= lower_bound && value < upper_bound;
+}
+
+Fragmentizer::Fragmentizer()
+{ }
 
 Fragmentizer::Fragmentizer(const Image &image)
-    : image(image){}
+    : image(image)
+{ }
 
-Image Fragmentizer::GetSegment(FragmentInfo segment_info)
+void Fragmentizer::SetNewImage(const Image &image)
 {
-    Image fragment(this->image);
+    fragments_cache.clear();
+    this->image = image;
+}
 
-    uint8_t fragment_size = UINT8_T_MAX / segment_info.fragments_count;
-    uint8_t lower_bound = fragment_size * segment_info.fragment_number;
+const Image &Fragmentizer::GetFragment(FragmentInfo fragment_info)
+{
+    if(fragments_cache.find(fragment_info) != fragments_cache.end())
+    {
+        std::cout << "Find\n";
+        return fragments_cache.at(fragment_info);
+    }
+    std::cout << "Not find\n";
+
+    Image& fragment =
+        fragments_cache.emplace(fragment_info, this->image).first->second;
+
+    uint8_t fragment_size = kUInt8Max / fragment_info.fragments_count;
+    uint8_t lower_bound = fragment_size * fragment_info.fragment_number;
     uint8_t upper_bound = lower_bound + fragment_size;
 
     for (uint32_t x = 0; x < fragment.width; x++)
@@ -34,13 +70,18 @@ Image Fragmentizer::GetSegment(FragmentInfo segment_info)
         {
             for (uint32_t c = 0; c < fragment.channels; c++)
             {
-                int pixel_index = (y * fragment.width + x) * fragment.channels + c;
+                int pixel_index =
+                    (y * fragment.width + x)* fragment.channels + c;
 
-                if (!IS_IN_BOUNDS(fragment.raw_data[pixel_index + c],
-                                  lower_bound,
-                                  upper_bound))
+                if (!IsInBounds(
+                        fragment.raw_data[pixel_index + c],
+                        lower_bound,
+                        upper_bound
+                    )
+                    && c != 3
+                )
                 {
-                    fragment.raw_data[pixel_index + c] = 0;
+                    fragment.raw_data[pixel_index + c] = 255;
                 }
             }
         }
@@ -49,7 +90,7 @@ Image Fragmentizer::GetSegment(FragmentInfo segment_info)
     return fragment;
 }
 
-const Image& Fragmentizer::GetOrigin()
+const Image& Fragmentizer::GetImage()
 {
     return image;
 }
