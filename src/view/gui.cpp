@@ -7,6 +7,7 @@
 #include "resources.h"
 #include "view/color_style.h"
 #include <algorithm>
+#include <bitset>
 
 const float kFloatEpsilon = 0.00001f;
 
@@ -21,6 +22,10 @@ Gui::Gui(
         InputData {
             .fragments_count = 10,
             .selected_fragment = 5,
+            .fragmentize_red_channel   = true,
+            .fragmentize_green_channel = true,
+            .fragmentize_blue_channel  = true,
+            .nonfragment_pixel_value  = 255,
             .origin_image_size      = ImVec2(300.0f, 300.0f),
             .fragment_image_size    = ImVec2(300.0f, 300.0f),
             .variance_graph_size    = ImVec2(300.0f, 300.0f),
@@ -59,24 +64,43 @@ std::string Gui::OpenFilePicker()
     return std::string(static_cast<char *>(result_path));
 }
 
+void Gui::UpdateFragment()
+{
+    ChannelsMask::T mask = static_cast<ChannelsMask::T>(
+        (input_data.fragmentize_red_channel
+            ? ChannelsMask::kR
+            : ChannelsMask::kNone)
+        | (input_data.fragmentize_green_channel
+            ? ChannelsMask::kG
+            : ChannelsMask::kNone)
+        | (input_data.fragmentize_blue_channel
+            ? ChannelsMask::kB
+            : ChannelsMask::kNone)
+    );
+
+    output_data.fragment_image = controller.GetFragment(
+        validated_input_data.fragments_count,
+        validated_input_data.selected_fragment,
+        mask,
+        input_data.nonfragment_pixel_value
+    );
+}
+
 void Gui::SelectImageButtonCallback()
 {
     validated_input_data.path_to_image = OpenFilePicker();
+
     controller.SetNewImage(validated_input_data.path_to_image);
+
     output_data.origin_image = controller.GetImage();
-    output_data.fragment_image = controller.GetFragment(
-        validated_input_data.fragments_count,
-        validated_input_data.selected_fragment
-    );
+
+    UpdateFragment();
 }
 
 void Gui::RerunFragmentationButtonCallback()
 {
     output_data.origin_image = controller.GetImage();
-    output_data.fragment_image = controller.GetFragment(
-        validated_input_data.fragments_count,
-        validated_input_data.selected_fragment
-    );
+    UpdateFragment();
 }
 
 inline bool operator==(const ImVec2& lhs, const ImVec2& rhs)
@@ -93,8 +117,12 @@ inline bool operator!=(const ImVec2& lhs, const ImVec2& rhs)
 bool Gui::InputData::operator==(const InputData &rhs)
 {
     return (
-        this->fragments_count      == rhs.fragments_count     &&
-        this->selected_fragment    == rhs.selected_fragment
+        this->fragments_count           == rhs.fragments_count              &&
+        this->selected_fragment         == rhs.selected_fragment            &&
+        this->fragmentize_red_channel   == rhs.fragmentize_red_channel      &&
+        this->fragmentize_green_channel == rhs.fragmentize_green_channel    &&
+        this->fragmentize_blue_channel  == rhs.fragmentize_blue_channel     &&
+        this->nonfragment_pixel_value   == rhs.nonfragment_pixel_value
         // this->path_to_image        == rhs.path_to_image       &&
         // this->origin_image_size    == rhs.origin_image_size   &&
         // this->fragment_image_size  == rhs.fragment_image_size &&
@@ -126,32 +154,63 @@ void Gui::ValidateInputData()
 
     if(input_data.selected_fragment < 0)
         input_data.selected_fragment = 0;
+
+    if(input_data.nonfragment_pixel_value > 255)
+        input_data.nonfragment_pixel_value = 255;
+
+    if(input_data.nonfragment_pixel_value < 0)
+        input_data.nonfragment_pixel_value = 0;
+
 }
 
 void Gui::BuildInputUI()
 {
-    if (ImGui::Button("Select Image"))
-    {
-        SelectImageButtonCallback();
-    }
+    if (ImGui::BeginTable(
+            "ImageGrid",
+            2,
+            ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable
+        )
+    ) {
+        ImGui::TableNextColumn();
 
-    ImGui::Text("Selected Image: %s", input_data.path_to_image.c_str());
-    ImGui::InputInt(
-        "Selected Fragment",
-        &(input_data.selected_fragment),
-        1,
-        10
-    );
-    ImGui::InputInt(
-        "Number of Fragments",
-        &(input_data.fragments_count),
-        1,
-        10
-    );
+        if (ImGui::Button("Select Image"))
+        {
+            SelectImageButtonCallback();
+        }
 
-    if (ImGui::Button("Rerun"))
-    {
-        RerunFragmentationButtonCallback();
+        ImGui::Text("Selected Image: %s", input_data.path_to_image.c_str());
+        ImGui::InputInt(
+            "Selected Fragment",
+            &(input_data.selected_fragment),
+            1,
+            10
+        );
+        ImGui::InputInt(
+            "Number of Fragments",
+            &(input_data.fragments_count),
+            1,
+            10
+        );
+
+        if (ImGui::Button("Rerun"))
+        {
+            RerunFragmentationButtonCallback();
+        }
+
+        ImGui::TableNextColumn();
+
+        ImGui::Checkbox("Red",      &(input_data.fragmentize_red_channel));
+        ImGui::Checkbox("Green",    &(input_data.fragmentize_green_channel));
+        ImGui::Checkbox("Blue",     &(input_data.fragmentize_blue_channel));
+
+        ImGui::InputInt(
+            "Nonfragment value",
+            &(input_data.nonfragment_pixel_value),
+            255,
+            255
+        );
+
+        ImGui::EndTable();
     }
 }
 
@@ -247,7 +306,6 @@ void Gui::OnRender()
 
     if(HasInputDataChanged())
     {
-        std::cout << "changed" << std::endl;
         ValidateInputData();
         if(HasInputDataChanged())
         {

@@ -3,35 +3,36 @@
 
 #include <map>
 #include <cstdint>
+#include <utility>
+#include <vector>
+#include "fragment_info.h"
 #include "image.h"
-
-struct FragmentInfo
-{
-    struct Less
-    {
-        bool operator()(const FragmentInfo &a, const FragmentInfo &b) const;
-    };
-
-    std::uint8_t fragments_count;
-    std::uint8_t fragment_number;
-
-    FragmentInfo() : FragmentInfo(0, 0) {}
-    FragmentInfo(std::uint8_t fragments_count, std::uint8_t fragment_number);
-};
 
 class Fragmentizer
 {
 private:
     Image image;
-    std::map<FragmentInfo, Image, FragmentInfo::Less> fragments_cache;
+    Image reserved_fragment;
+    std::map<FragmentInfo, Image, FragmentInfo::Comparator> fragments_cache;
 
+    bool IsCacheFull();
+    std::pair<Image&, bool> TryFindInCache(FragmentInfo fragment_info);
+
+    void CutImageToFragment(
+        FragmentInfo fragment_info,
+        Image& image
+    );
 
 public:
     Fragmentizer();
     Fragmentizer(const Image &image);
+    Fragmentizer(Image &&image);
+
     void SetNewImage(const Image &image);
+    void SetNewImage(Image &&image);
 
     const Image &GetFragment(FragmentInfo fragment_info);
+
     const Image &GetImage();
 };
 

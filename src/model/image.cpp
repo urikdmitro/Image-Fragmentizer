@@ -2,6 +2,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <cstdlib>
+#include <iostream>
 
 Image::Image()
     : raw_data(nullptr)
@@ -26,7 +28,7 @@ Image::Image(const Image &image)
     , height(image.height)
     , channels(image.channels)
 {
-    this->raw_data = (uint8_t*)STBI_MALLOC(width * height * channels);
+    this->raw_data = (std::uint8_t*)STBI_MALLOC(width * height * channels);
     std::copy(
         image.raw_data,
         image.raw_data + (width * height * channels),
@@ -49,31 +51,40 @@ Image::Image(Image &&image)
 
 Image &Image::operator=(const Image &image)
 {
-    this->width = image.width;
-    this->height = image.height;
-    this->channels = image.channels;
+    if(this != &image)
+    {
+        stbi_image_free(this->raw_data);
 
-    this->raw_data = (uint8_t*)STBI_MALLOC(width * height * channels);
-    std::copy(
-        image.raw_data,
-        image.raw_data + (width * height * channels),
-        this->raw_data
-    );
+        this->width = image.width;
+        this->height = image.height;
+        this->channels = image.channels;
 
+        this->raw_data = (std::uint8_t*)STBI_MALLOC(width * height * channels);
+        std::copy(
+            image.raw_data,
+            image.raw_data + (width * height * channels),
+            this->raw_data
+        );
+    }
     return *this;
 }
 
 Image &Image::operator=(Image &&image)
 {
-    this->raw_data = image.raw_data;
-    this->width = image.width;
-    this->height = image.height;
-    this->channels = image.channels;
+    if(this != &image)
+    {
+        stbi_image_free(this->raw_data);
 
-    image.raw_data = nullptr;
-    image.width = 0;
-    image.height = 0;
-    image.channels = 0;
+        this->raw_data = image.raw_data;
+        this->width = image.width;
+        this->height = image.height;
+        this->channels = image.channels;
+
+        image.raw_data = nullptr;
+        image.width = 0;
+        image.height = 0;
+        image.channels = 0;
+    }
 
     return *this;
 }

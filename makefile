@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++17 -O2 -Wall -g
+CXXFLAGS := -std=c++17 -O2 -Wall
 
 IMGUI_DIR       := ./vendor/imgui
 NFD_DIR         := ./vendor/nativefiledialog

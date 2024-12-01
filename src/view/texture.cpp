@@ -70,23 +70,38 @@ Texture::Texture(const Texture &texture)
 
 Texture &Texture::operator=(Texture &&texture)
 {
-    this->id = texture.id;
-    this->x = texture.x;
-    this->y = texture.y;
+    if(this != &texture)
+    {
+        if (id != 0)
+        {
+            glDeleteTextures(1, &id);
+        }
 
-    texture.id = 0;
-    texture.x = 0;
-    texture.y = 0;
+        this->id = texture.id;
+        this->x = texture.x;
+        this->y = texture.y;
+
+        texture.id = 0;
+        texture.x = 0;
+        texture.y = 0;
+    }
 
     return *this;
 }
 
 Texture &Texture::operator=(const Texture &texture)
 {
-    x = texture.x;
-    y = texture.y;
-    id = DuplicateOpenGLTexture(texture.id, x, y);
+    if(this != &texture)
+    {
+        if (id != 0)
+        {
+            glDeleteTextures(1, &id);
+        }
 
+        x = texture.x;
+        y = texture.y;
+        id = DuplicateOpenGLTexture(texture.id, x, y);
+    }
     return *this;
 }
 

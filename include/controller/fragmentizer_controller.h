@@ -14,8 +14,13 @@ public:
     FragmentizerController(Fragmentizer &fragmentizer);
 
     void SetNewImage(std::string path);
-    Texture GetFragment(int fragments_count, int fragment_number) const;
     Texture GetImage() const;
+    Texture GetFragment(
+        int fragments_count,
+        int fragment_number,
+        ChannelsMask::T channels_to_fragmentize = ChannelsMask::kRGB,
+        std::uint8_t nonfragment_value = 255
+    ) const;
 };
 
 #endif // CONTROLLER_FRAGMENTIZER_CONTROLLER_H_

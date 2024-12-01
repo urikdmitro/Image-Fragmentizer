@@ -20,6 +20,11 @@ private:
         int selected_fragment;
         std::string path_to_image;
 
+        bool fragmentize_red_channel;
+        bool fragmentize_green_channel;
+        bool fragmentize_blue_channel;
+        int nonfragment_pixel_value;
+
         ImVec2 origin_image_size;
         ImVec2 fragment_image_size;
         ImVec2 variance_graph_size;
@@ -53,6 +58,8 @@ private:
     void BuildOutputUI();
     void SelectImageButtonCallback();
     void RerunFragmentationButtonCallback();
+
+    void UpdateFragment();
 
     void SetColorStyle();
     bool HasInputDataChanged();

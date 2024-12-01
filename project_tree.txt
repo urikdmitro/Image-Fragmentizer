@@ -1,0 +1,749 @@
+.
+├── app
+├── assets
+│   ├── fonts
+│   │   ├── OFL.txt
+│   │   ├── OpenSans-Bold.ttf
+│   │   ├── OpenSans-BoldItalic.ttf
+│   │   ├── OpenSans-ExtraBold.ttf
+│   │   ├── OpenSans-ExtraBoldItalic.ttf
+│   │   ├── OpenSans-Italic-VariableFont_wdth,wght.ttf
+│   │   ├── OpenSans-Italic.ttf
+│   │   ├── OpenSans-Light.ttf
+│   │   ├── OpenSans-LightItalic.ttf
+│   │   ├── OpenSans-Medium.ttf
+│   │   ├── OpenSans-MediumItalic.ttf
+│   │   ├── OpenSans-Regular.ttf
+│   │   ├── OpenSans-SemiBold.ttf
+│   │   ├── OpenSans-SemiBoldItalic.ttf
+│   │   ├── OpenSans-VariableFont_wdth,wght.ttf
+│   │   ├── OpenSans_Condensed-Bold.ttf
+│   │   ├── OpenSans_Condensed-BoldItalic.ttf
+│   │   ├── OpenSans_Condensed-ExtraBold.ttf
+│   │   ├── OpenSans_Condensed-ExtraBoldItalic.ttf
+│   │   ├── OpenSans_Condensed-Italic.ttf
+│   │   ├── OpenSans_Condensed-Light.ttf
+│   │   ├── OpenSans_Condensed-LightItalic.ttf
+│   │   ├── OpenSans_Condensed-Medium.ttf
+│   │   ├── OpenSans_Condensed-MediumItalic.ttf
+│   │   ├── OpenSans_Condensed-Regular.ttf
+│   │   ├── OpenSans_Condensed-SemiBold.ttf
+│   │   ├── OpenSans_Condensed-SemiBoldItalic.ttf
+│   │   ├── OpenSans_SemiCondensed-Bold.ttf
+│   │   ├── OpenSans_SemiCondensed-BoldItalic.ttf
+│   │   ├── OpenSans_SemiCondensed-ExtraBold.ttf
+│   │   ├── OpenSans_SemiCondensed-ExtraBoldItalic.ttf
+│   │   ├── OpenSans_SemiCondensed-Italic.ttf
+│   │   ├── OpenSans_SemiCondensed-Light.ttf
+│   │   ├── OpenSans_SemiCondensed-LightItalic.ttf
+│   │   ├── OpenSans_SemiCondensed-Medium.ttf
+│   │   ├── OpenSans_SemiCondensed-MediumItalic.ttf
+│   │   ├── OpenSans_SemiCondensed-Regular.ttf
+│   │   ├── OpenSans_SemiCondensed-SemiBold.ttf
+│   │   ├── OpenSans_SemiCondensed-SemiBoldItalic.ttf
+│   │   └── README.txt
+│   └── noimage.png
+├── build
+│   ├── src
+│   │   ├── controller
+│   │   │   └── fragmentizer_controller.o
+│   │   ├── main.o
+│   │   ├── model
+│   │   │   ├── fragment_info.o
+│   │   │   ├── fragmentizer.o
+│   │   │   └── image.o
+│   │   ├── opengl_context.o
+│   │   ├── resources.o
+│   │   └── view
+│   │       ├── gui.o
+│   │       └── texture.o
+│   └── vendor
+│       └── imgui
+│           ├── backends
+│           │   ├── imgui_impl_glfw.o
+│           │   └── imgui_impl_opengl3.o
+│           ├── imgui.o
+│           ├── imgui_draw.o
+│           ├── imgui_tables.o
+│           └── imgui_widgets.o
+├── imgui.ini
+├── include
+│   ├── controller
+│   │   └── fragmentizer_controller.h
+│   ├── model
+│   │   ├── channels_mask.h
+│   │   ├── fragment_info.h
+│   │   ├── fragmentizer.h
+│   │   └── image.h
+│   ├── opengl_context.h
+│   ├── resources.h
+│   └── view
+│       ├── color_style.h
+│       ├── gui.h
+│       └── texture.h
+├── makefile
+├── project_tree.txt
+├── src
+│   ├── controller
+│   │   └── fragmentizer_controller.cpp
+│   ├── main.cpp
+│   ├── model
+│   │   ├── fragment_info.cpp
+│   │   ├── fragmentizer.cpp
+│   │   └── image.cpp
+│   ├── opengl_context.cpp
+│   ├── resources.cpp
+│   └── view
+│       ├── gui.cpp
+│       └── texture.cpp
+└── vendor
+    ├── imgui
+    │   ├── LICENSE.txt
+    │   ├── backends
+    │   │   ├── imgui_impl_allegro5.cpp
+    │   │   ├── imgui_impl_allegro5.h
+    │   │   ├── imgui_impl_android.cpp
+    │   │   ├── imgui_impl_android.h
+    │   │   ├── imgui_impl_dx10.cpp
+    │   │   ├── imgui_impl_dx10.h
+    │   │   ├── imgui_impl_dx11.cpp
+    │   │   ├── imgui_impl_dx11.h
+    │   │   ├── imgui_impl_dx12.cpp
+    │   │   ├── imgui_impl_dx12.h
+    │   │   ├── imgui_impl_dx9.cpp
+    │   │   ├── imgui_impl_dx9.h
+    │   │   ├── imgui_impl_glfw.cpp
+    │   │   ├── imgui_impl_glfw.h
+    │   │   ├── imgui_impl_glut.cpp
+    │   │   ├── imgui_impl_glut.h
+    │   │   ├── imgui_impl_metal.h
+    │   │   ├── imgui_impl_metal.mm
+    │   │   ├── imgui_impl_opengl2.cpp
+    │   │   ├── imgui_impl_opengl2.h
+    │   │   ├── imgui_impl_opengl3.cpp
+    │   │   ├── imgui_impl_opengl3.h
+    │   │   ├── imgui_impl_opengl3_loader.h
+    │   │   ├── imgui_impl_osx.h
+    │   │   ├── imgui_impl_osx.mm
+    │   │   ├── imgui_impl_sdl2.cpp
+    │   │   ├── imgui_impl_sdl2.h
+    │   │   ├── imgui_impl_sdl3.cpp
+    │   │   ├── imgui_impl_sdl3.h
+    │   │   ├── imgui_impl_sdlrenderer2.cpp
+    │   │   ├── imgui_impl_sdlrenderer2.h
+    │   │   ├── imgui_impl_sdlrenderer3.cpp
+    │   │   ├── imgui_impl_sdlrenderer3.h
+    │   │   ├── imgui_impl_vulkan.cpp
+    │   │   ├── imgui_impl_vulkan.h
+    │   │   ├── imgui_impl_wgpu.cpp
+    │   │   ├── imgui_impl_wgpu.h
+    │   │   ├── imgui_impl_win32.cpp
+    │   │   ├── imgui_impl_win32.h
+    │   │   └── vulkan
+    │   │       ├── generate_spv.sh
+    │   │       ├── glsl_shader.frag
+    │   │       └── glsl_shader.vert
+    │   ├── docs
+    │   │   ├── BACKENDS.md
+    │   │   ├── CHANGELOG.txt
+    │   │   ├── CONTRIBUTING.md
+    │   │   ├── EXAMPLES.md
+    │   │   ├── FAQ.md
+    │   │   ├── FONTS.md
+    │   │   ├── README.md
+    │   │   └── TODO.txt
+    │   ├── imconfig.h
+    │   ├── imgui.cpp
+    │   ├── imgui.h
+    │   ├── imgui_demo.cpp
+    │   ├── imgui_draw.cpp
+    │   ├── imgui_internal.h
+    │   ├── imgui_tables.cpp
+    │   ├── imgui_widgets.cpp
+    │   ├── imstb_rectpack.h
+    │   ├── imstb_textedit.h
+    │   ├── imstb_truetype.h
+    │   └── misc
+    │       ├── README.txt
+    │       ├── cpp
+    │       │   ├── README.txt
+    │       │   ├── imgui_stdlib.cpp
+    │       │   └── imgui_stdlib.h
+    │       ├── debuggers
+    │       │   ├── README.txt
+    │       │   ├── imgui.gdb
+    │       │   ├── imgui.natstepfilter
+    │       │   └── imgui.natvis
+    │       ├── fonts
+    │       │   ├── Cousine-Regular.ttf
+    │       │   ├── DroidSans.ttf
+    │       │   ├── Karla-Regular.ttf
+    │       │   ├── ProggyClean.ttf
+    │       │   ├── ProggyTiny.ttf
+    │       │   ├── Roboto-Medium.ttf
+    │       │   └── binary_to_compressed_c.cpp
+    │       ├── freetype
+    │       │   ├── README.md
+    │       │   ├── imgui_freetype.cpp
+    │       │   └── imgui_freetype.h
+    │       └── single_file
+    │           └── imgui_single_file.h
+    ├── nativefiledialog
+    │   ├── LICENSE
+    │   ├── README.md
+    │   ├── build
+    │   │   ├── Makefile
+    │   │   ├── bin
+    │   │   │   ├── test_opendialog
+    │   │   │   ├── test_opendialogmultiple
+    │   │   │   ├── test_pickfolder
+    │   │   │   └── test_savedialog
+    │   │   ├── dont_run_premake.txt
+    │   │   ├── gmake_linux
+    │   │   │   ├── Makefile
+    │   │   │   ├── nfd.make
+    │   │   │   ├── test_opendialog.make
+    │   │   │   ├── test_opendialogmultiple.make
+    │   │   │   ├── test_pickfolder.make
+    │   │   │   └── test_savedialog.make
+    │   │   ├── gmake_linux_zenity
+    │   │   │   ├── Makefile
+    │   │   │   ├── nfd.make
+    │   │   │   ├── test_opendialog.make
+    │   │   │   ├── test_opendialogmultiple.make
+    │   │   │   ├── test_pickfolder.make
+    │   │   │   └── test_savedialog.make
+    │   │   ├── gmake_macosx
+    │   │   │   ├── Makefile
+    │   │   │   ├── nfd.make
+    │   │   │   ├── test_opendialog.make
+    │   │   │   ├── test_opendialogmultiple.make
+    │   │   │   ├── test_pickfolder.make
+    │   │   │   └── test_savedialog.make
+    │   │   ├── gmake_windows
+    │   │   │   ├── Makefile
+    │   │   │   ├── nfd.make
+    │   │   │   ├── test_opendialog.make
+    │   │   │   ├── test_opendialogmultiple.make
+    │   │   │   ├── test_pickfolder.make
+    │   │   │   └── test_savedialog.make
+    │   │   ├── lib
+    │   │   │   └── Release
+    │   │   │       └── x64
+    │   │   │           └── libnfd.a
+    │   │   ├── nfd.make
+    │   │   ├── obj
+    │   │   │   └── x64
+    │   │   │       └── Release
+    │   │   │           ├── nfd
+    │   │   │           │   ├── nfd_common.d
+    │   │   │           │   ├── nfd_common.o
+    │   │   │           │   ├── nfd_gtk.d
+    │   │   │           │   └── nfd_gtk.o
+    │   │   │           ├── test_opendialog
+    │   │   │           │   ├── test_opendialog.d
+    │   │   │           │   └── test_opendialog.o
+    │   │   │           ├── test_opendialogmultiple
+    │   │   │           │   ├── test_opendialogmultiple.d
+    │   │   │           │   └── test_opendialogmultiple.o
+    │   │   │           ├── test_pickfolder
+    │   │   │           │   ├── test_pickfolder.d
+    │   │   │           │   └── test_pickfolder.o
+    │   │   │           └── test_savedialog
+    │   │   │               ├── test_savedialog.d
+    │   │   │               └── test_savedialog.o
+    │   │   ├── premake5.lua
+    │   │   ├── test_opendialog.make
+    │   │   ├── test_opendialogmultiple.make
+    │   │   ├── test_pickfolder.make
+    │   │   ├── test_savedialog.make
+    │   │   ├── vs2010
+    │   │   │   ├── NativeFileDialog.sln
+    │   │   │   ├── nfd.vcxproj
+    │   │   │   ├── nfd.vcxproj.filters
+    │   │   │   ├── test_opendialog.vcxproj
+    │   │   │   ├── test_opendialogmultiple.vcxproj
+    │   │   │   ├── test_pickfolder.vcxproj
+    │   │   │   └── test_savedialog.vcxproj
+    │   │   └── xcode4
+    │   │       ├── NativeFileDialog.xcworkspace
+    │   │       │   └── contents.xcworkspacedata
+    │   │       ├── nfd.xcodeproj
+    │   │       │   └── project.pbxproj
+    │   │       ├── test_opendialog.xcodeproj
+    │   │       │   └── project.pbxproj
+    │   │       ├── test_opendialogmultiple.xcodeproj
+    │   │       │   └── project.pbxproj
+    │   │       ├── test_pickfolder.xcodeproj
+    │   │       │   └── project.pbxproj
+    │   │       └── test_savedialog.xcodeproj
+    │   │           └── project.pbxproj
+    │   ├── docs
+    │   │   ├── build.md
+    │   │   └── contributing.md
+    │   ├── screens
+    │   │   ├── open_cocoa.png
+    │   │   ├── open_gtk3.png
+    │   │   └── open_win.png
+    │   ├── src
+    │   │   ├── common.h
+    │   │   ├── include
+    │   │   │   └── nfd.h
+    │   │   ├── nfd_cocoa.m
+    │   │   ├── nfd_common.c
+    │   │   ├── nfd_common.h
+    │   │   ├── nfd_gtk.c
+    │   │   ├── nfd_win.cpp
+    │   │   ├── nfd_zenity.c
+    │   │   └── simple_exec.h
+    │   └── test
+    │       ├── test_opendialog.c
+    │       ├── test_opendialogmultiple.c
+    │       ├── test_pickfolder.c
+    │       └── test_savedialog.c
+    └── stb
+        ├── LICENSE
+        ├── README.md
+        ├── data
+        │   ├── atari_8bit_font_revised.png
+        │   ├── easy_font_raw.png
+        │   ├── herringbone
+        │   │   ├── license.txt
+        │   │   ├── template_caves_limit_connectivity.png
+        │   │   ├── template_caves_tiny_corridors.png
+        │   │   ├── template_corner_caves.png
+        │   │   ├── template_horizontal_corridors_v1.png
+        │   │   ├── template_horizontal_corridors_v2.png
+        │   │   ├── template_horizontal_corridors_v3.png
+        │   │   ├── template_limit_connectivity_fat.png
+        │   │   ├── template_limited_connectivity.png
+        │   │   ├── template_maze_2_wide.png
+        │   │   ├── template_maze_plus_2_wide.png
+        │   │   ├── template_open_areas.png
+        │   │   ├── template_ref2_corner_caves.png
+        │   │   ├── template_rooms_and_corridors.png
+        │   │   ├── template_rooms_and_corridors_2_wide_diagonal_bias.png
+        │   │   ├── template_rooms_limit_connectivity.png
+        │   │   ├── template_round_rooms_diagonal_corridors.png
+        │   │   ├── template_sean_dungeon.png
+        │   │   ├── template_simple_caves_2_wide.png
+        │   │   └── template_square_rooms_with_random_rects.png
+        │   ├── map_01.png
+        │   ├── map_02.png
+        │   └── map_03.png
+        ├── deprecated
+        │   ├── rrsprintf.h
+        │   ├── stb.h
+        │   ├── stb_image.c
+        │   ├── stb_image_resize.h
+        │   ├── stretch_test.c
+        │   ├── stretchy_buffer.h
+        │   └── stretchy_buffer.txt
+        ├── docs
+        │   ├── other_libs.md
+        │   ├── stb_howto.txt
+        │   ├── stb_voxel_render_interview.md
+        │   └── why_public_domain.md
+        ├── stb_c_lexer.h
+        ├── stb_connected_components.h
+        ├── stb_divide.h
+        ├── stb_ds.h
+        ├── stb_dxt.h
+        ├── stb_easy_font.h
+        ├── stb_herringbone_wang_tile.h
+        ├── stb_hexwave.h
+        ├── stb_image.h
+        ├── stb_image_resize2.h
+        ├── stb_image_resize_test
+        │   ├── dotimings.c
+        │   ├── old_image_resize.h
+        │   ├── oldir.c
+        │   ├── stbirtest.c
+        │   └── vf_train.c
+        ├── stb_image_write.h
+        ├── stb_include.h
+        ├── stb_leakcheck.h
+        ├── stb_perlin.h
+        ├── stb_rect_pack.h
+        ├── stb_sprintf.h
+        ├── stb_textedit.h
+        ├── stb_tilemap_editor.h
+        ├── stb_truetype.h
+        ├── stb_vorbis.c
+        ├── stb_voxel_render.h
+        ├── tests
+        │   ├── Makefile
+        │   ├── c_lexer_test.c
+        │   ├── c_lexer_test.dsp
+        │   ├── caveview
+        │   │   ├── README.md
+        │   │   ├── cave_main.c
+        │   │   ├── cave_mesher.c
+        │   │   ├── cave_parse.c
+        │   │   ├── cave_parse.h
+        │   │   ├── cave_render.c
+        │   │   ├── caveview.dsp
+        │   │   ├── caveview.dsw
+        │   │   ├── caveview.h
+        │   │   ├── glext.h
+        │   │   ├── glext_list.h
+        │   │   ├── main.c
+        │   │   ├── stb_gl.h
+        │   │   ├── stb_glprog.h
+        │   │   └── win32
+        │   │       └── SDL_windows_main.c
+        │   ├── fuzz_main.c
+        │   ├── grid_reachability.c
+        │   ├── herringbone.dsp
+        │   ├── herringbone_generator.c
+        │   ├── herringbone_map.c
+        │   ├── herringbone_map.dsp
+        │   ├── image_test.c
+        │   ├── image_test.dsp
+        │   ├── image_write_test.c
+        │   ├── ossfuzz.sh
+        │   ├── oversample
+        │   │   ├── README.md
+        │   │   ├── main.c
+        │   │   ├── oversample.dsp
+        │   │   ├── oversample.dsw
+        │   │   ├── oversample.exe
+        │   │   └── stb_wingraph.h
+        │   ├── pbm
+        │   │   ├── basi0g16.pgm
+        │   │   ├── basi2c16.ppm
+        │   │   ├── cdfn2c08.ppm
+        │   │   ├── cdun2c08.ppm
+        │   │   ├── comment.pgm
+        │   │   └── ctfn0g04.pgm
+        │   ├── pg_test
+        │   │   └── pg_test.c
+        │   ├── pngsuite
+        │   │   ├── 16bit
+        │   │   │   ├── basi0g16.png
+        │   │   │   ├── basi2c16.png
+        │   │   │   ├── basi4a16.png
+        │   │   │   ├── basi6a16.png
+        │   │   │   ├── basn0g16.png
+        │   │   │   ├── basn2c16.png
+        │   │   │   ├── basn4a16.png
+        │   │   │   ├── basn6a16.png
+        │   │   │   ├── bgai4a16.png
+        │   │   │   ├── bgan6a16.png
+        │   │   │   ├── bggn4a16.png
+        │   │   │   ├── bgyn6a16.png
+        │   │   │   ├── oi1n0g16.png
+        │   │   │   ├── oi1n2c16.png
+        │   │   │   ├── oi2n0g16.png
+        │   │   │   ├── oi2n2c16.png
+        │   │   │   ├── oi4n0g16.png
+        │   │   │   ├── oi4n2c16.png
+        │   │   │   ├── oi9n0g16.png
+        │   │   │   ├── oi9n2c16.png
+        │   │   │   ├── tbbn2c16.png
+        │   │   │   ├── tbgn2c16.png
+        │   │   │   └── tbwn0g16.png
+        │   │   ├── PngSuite.LICENSE
+        │   │   ├── corrupt
+        │   │   │   ├── xc1n0g08.png
+        │   │   │   ├── xc9n2c08.png
+        │   │   │   ├── xcrn0g04.png
+        │   │   │   ├── xcsn0g01.png
+        │   │   │   ├── xd0n2c08.png
+        │   │   │   ├── xd3n2c08.png
+        │   │   │   ├── xd9n2c08.png
+        │   │   │   ├── xdtn0g01.png
+        │   │   │   ├── xhdn0g08.png
+        │   │   │   ├── xlfn0g04.png
+        │   │   │   ├── xs1n0g01.png
+        │   │   │   ├── xs2n0g01.png
+        │   │   │   ├── xs4n0g01.png
+        │   │   │   └── xs7n0g01.png
+        │   │   ├── iphone
+        │   │   │   ├── iphone_basi0g01.png
+        │   │   │   ├── iphone_basi0g02.png
+        │   │   │   ├── iphone_basi3p02.png
+        │   │   │   ├── iphone_bgwn6a08.png
+        │   │   │   ├── iphone_bgyn6a16.png
+        │   │   │   ├── iphone_tbyn3p08.png
+        │   │   │   └── iphone_z06n2c08.png
+        │   │   ├── primary
+        │   │   │   ├── basi0g01.png
+        │   │   │   ├── basi0g02.png
+        │   │   │   ├── basi0g04.png
+        │   │   │   ├── basi0g08.png
+        │   │   │   ├── basi2c08.png
+        │   │   │   ├── basi3p01.png
+        │   │   │   ├── basi3p02.png
+        │   │   │   ├── basi3p04.png
+        │   │   │   ├── basi3p08.png
+        │   │   │   ├── basi4a08.png
+        │   │   │   ├── basi6a08.png
+        │   │   │   ├── basn0g01.png
+        │   │   │   ├── basn0g02.png
+        │   │   │   ├── basn0g04.png
+        │   │   │   ├── basn0g08.png
+        │   │   │   ├── basn2c08.png
+        │   │   │   ├── basn3p01.png
+        │   │   │   ├── basn3p02.png
+        │   │   │   ├── basn3p04.png
+        │   │   │   ├── basn3p08.png
+        │   │   │   ├── basn4a08.png
+        │   │   │   ├── basn6a08.png
+        │   │   │   ├── bgai4a08.png
+        │   │   │   ├── bgan6a08.png
+        │   │   │   ├── bgbn4a08.png
+        │   │   │   ├── bgwn6a08.png
+        │   │   │   ├── s01i3p01.png
+        │   │   │   ├── s01n3p01.png
+        │   │   │   ├── s02i3p01.png
+        │   │   │   ├── s02n3p01.png
+        │   │   │   ├── s03i3p01.png
+        │   │   │   ├── s03n3p01.png
+        │   │   │   ├── s04i3p01.png
+        │   │   │   ├── s04n3p01.png
+        │   │   │   ├── s05i3p02.png
+        │   │   │   ├── s05n3p02.png
+        │   │   │   ├── s06i3p02.png
+        │   │   │   ├── s06n3p02.png
+        │   │   │   ├── s07i3p02.png
+        │   │   │   ├── s07n3p02.png
+        │   │   │   ├── s08i3p02.png
+        │   │   │   ├── s08n3p02.png
+        │   │   │   ├── s09i3p02.png
+        │   │   │   ├── s09n3p02.png
+        │   │   │   ├── s32i3p04.png
+        │   │   │   ├── s32n3p04.png
+        │   │   │   ├── s33i3p04.png
+        │   │   │   ├── s33n3p04.png
+        │   │   │   ├── s34i3p04.png
+        │   │   │   ├── s34n3p04.png
+        │   │   │   ├── s35i3p04.png
+        │   │   │   ├── s35n3p04.png
+        │   │   │   ├── s36i3p04.png
+        │   │   │   ├── s36n3p04.png
+        │   │   │   ├── s37i3p04.png
+        │   │   │   ├── s37n3p04.png
+        │   │   │   ├── s38i3p04.png
+        │   │   │   ├── s38n3p04.png
+        │   │   │   ├── s39i3p04.png
+        │   │   │   ├── s39n3p04.png
+        │   │   │   ├── s40i3p04.png
+        │   │   │   ├── s40n3p04.png
+        │   │   │   ├── tbbn0g04.png
+        │   │   │   ├── tbbn3p08.png
+        │   │   │   ├── tbgn3p08.png
+        │   │   │   ├── tbrn2c08.png
+        │   │   │   ├── tbwn3p08.png
+        │   │   │   ├── tbyn3p08.png
+        │   │   │   ├── tm3n3p02.png
+        │   │   │   ├── tp0n0g08.png
+        │   │   │   ├── tp0n2c08.png
+        │   │   │   ├── tp0n3p08.png
+        │   │   │   ├── tp1n3p08.png
+        │   │   │   ├── z00n2c08.png
+        │   │   │   ├── z03n2c08.png
+        │   │   │   ├── z06n2c08.png
+        │   │   │   └── z09n2c08.png
+        │   │   ├── primary_check
+        │   │   │   ├── basi0g01.png
+        │   │   │   ├── basi0g02.png
+        │   │   │   ├── basi0g04.png
+        │   │   │   ├── basi0g08.png
+        │   │   │   ├── basi2c08.png
+        │   │   │   ├── basi3p01.png
+        │   │   │   ├── basi3p02.png
+        │   │   │   ├── basi3p04.png
+        │   │   │   ├── basi3p08.png
+        │   │   │   ├── basi4a08.png
+        │   │   │   ├── basi6a08.png
+        │   │   │   ├── basn0g01.png
+        │   │   │   ├── basn0g02.png
+        │   │   │   ├── basn0g04.png
+        │   │   │   ├── basn0g08.png
+        │   │   │   ├── basn2c08.png
+        │   │   │   ├── basn3p01.png
+        │   │   │   ├── basn3p02.png
+        │   │   │   ├── basn3p04.png
+        │   │   │   ├── basn3p08.png
+        │   │   │   ├── basn4a08.png
+        │   │   │   ├── basn6a08.png
+        │   │   │   ├── bgai4a08.png
+        │   │   │   ├── bgan6a08.png
+        │   │   │   ├── bgbn4a08.png
+        │   │   │   ├── bgwn6a08.png
+        │   │   │   ├── s01i3p01.png
+        │   │   │   ├── s01n3p01.png
+        │   │   │   ├── s02i3p01.png
+        │   │   │   ├── s02n3p01.png
+        │   │   │   ├── s03i3p01.png
+        │   │   │   ├── s03n3p01.png
+        │   │   │   ├── s04i3p01.png
+        │   │   │   ├── s04n3p01.png
+        │   │   │   ├── s05i3p02.png
+        │   │   │   ├── s05n3p02.png
+        │   │   │   ├── s06i3p02.png
+        │   │   │   ├── s06n3p02.png
+        │   │   │   ├── s07i3p02.png
+        │   │   │   ├── s07n3p02.png
+        │   │   │   ├── s08i3p02.png
+        │   │   │   ├── s08n3p02.png
+        │   │   │   ├── s09i3p02.png
+        │   │   │   ├── s09n3p02.png
+        │   │   │   ├── s32i3p04.png
+        │   │   │   ├── s32n3p04.png
+        │   │   │   ├── s33i3p04.png
+        │   │   │   ├── s33n3p04.png
+        │   │   │   ├── s34i3p04.png
+        │   │   │   ├── s34n3p04.png
+        │   │   │   ├── s35i3p04.png
+        │   │   │   ├── s35n3p04.png
+        │   │   │   ├── s36i3p04.png
+        │   │   │   ├── s36n3p04.png
+        │   │   │   ├── s37i3p04.png
+        │   │   │   ├── s37n3p04.png
+        │   │   │   ├── s38i3p04.png
+        │   │   │   ├── s38n3p04.png
+        │   │   │   ├── s39i3p04.png
+        │   │   │   ├── s39n3p04.png
+        │   │   │   ├── s40i3p04.png
+        │   │   │   ├── s40n3p04.png
+        │   │   │   ├── tbbn0g04.png
+        │   │   │   ├── tbbn3p08.png
+        │   │   │   ├── tbgn3p08.png
+        │   │   │   ├── tbrn2c08.png
+        │   │   │   ├── tbwn3p08.png
+        │   │   │   ├── tbyn3p08.png
+        │   │   │   ├── tm3n3p02.png
+        │   │   │   ├── tp0n0g08.png
+        │   │   │   ├── tp0n2c08.png
+        │   │   │   ├── tp0n3p08.png
+        │   │   │   ├── tp1n3p08.png
+        │   │   │   ├── z00n2c08.png
+        │   │   │   ├── z03n2c08.png
+        │   │   │   ├── z06n2c08.png
+        │   │   │   └── z09n2c08.png
+        │   │   ├── ref_results.csv
+        │   │   └── unused
+        │   │       ├── ccwn2c08.png
+        │   │       ├── ccwn3p08.png
+        │   │       ├── cdfn2c08.png
+        │   │       ├── cdhn2c08.png
+        │   │       ├── cdsn2c08.png
+        │   │       ├── cdun2c08.png
+        │   │       ├── ch1n3p04.png
+        │   │       ├── ch2n3p08.png
+        │   │       ├── cm0n0g04.png
+        │   │       ├── cm7n0g04.png
+        │   │       ├── cm9n0g04.png
+        │   │       ├── cs3n2c16.png
+        │   │       ├── cs3n3p08.png
+        │   │       ├── cs5n2c08.png
+        │   │       ├── cs5n3p08.png
+        │   │       ├── cs8n2c08.png
+        │   │       ├── cs8n3p08.png
+        │   │       ├── ct0n0g04.png
+        │   │       ├── ct1n0g04.png
+        │   │       ├── cten0g04.png
+        │   │       ├── ctfn0g04.png
+        │   │       ├── ctgn0g04.png
+        │   │       ├── cthn0g04.png
+        │   │       ├── ctjn0g04.png
+        │   │       ├── ctzn0g04.png
+        │   │       ├── f00n0g08.png
+        │   │       ├── f00n2c08.png
+        │   │       ├── f01n0g08.png
+        │   │       ├── f01n2c08.png
+        │   │       ├── f02n0g08.png
+        │   │       ├── f02n2c08.png
+        │   │       ├── f03n0g08.png
+        │   │       ├── f03n2c08.png
+        │   │       ├── f04n0g08.png
+        │   │       ├── f04n2c08.png
+        │   │       ├── f99n0g04.png
+        │   │       ├── g03n0g16.png
+        │   │       ├── g03n2c08.png
+        │   │       ├── g03n3p04.png
+        │   │       ├── g04n0g16.png
+        │   │       ├── g04n2c08.png
+        │   │       ├── g04n3p04.png
+        │   │       ├── g05n0g16.png
+        │   │       ├── g05n2c08.png
+        │   │       ├── g05n3p04.png
+        │   │       ├── g07n0g16.png
+        │   │       ├── g07n2c08.png
+        │   │       ├── g07n3p04.png
+        │   │       ├── g10n0g16.png
+        │   │       ├── g10n2c08.png
+        │   │       ├── g10n3p04.png
+        │   │       ├── g25n0g16.png
+        │   │       ├── g25n2c08.png
+        │   │       ├── g25n3p04.png
+        │   │       ├── pp0n2c16.png
+        │   │       ├── pp0n6a08.png
+        │   │       ├── ps1n0g08.png
+        │   │       ├── ps1n2c16.png
+        │   │       ├── ps2n0g08.png
+        │   │       └── ps2n2c16.png
+        │   ├── prerelease
+        │   │   └── stb_lib.h
+        │   ├── resample_test.cpp
+        │   ├── resample_test_c.c
+        │   ├── resize.dsp
+        │   ├── sdf
+        │   │   ├── sdf_test.c
+        │   │   ├── sdf_test_arial_16.png
+        │   │   ├── sdf_test_times_16.png
+        │   │   └── sdf_test_times_50.png
+        │   ├── stb.c
+        │   ├── stb.dsp
+        │   ├── stb.dsw
+        │   ├── stb_c_lexer_fuzzer.cpp
+        │   ├── stb_cpp.cpp
+        │   ├── stb_cpp.dsp
+        │   ├── stb_png.dict
+        │   ├── stb_static.c
+        │   ├── stbi_read_fuzzer.c
+        │   ├── stblib.dsp
+        │   ├── stblib_test.c
+        │   ├── stblib_test_companion.c
+        │   ├── stretch_test.dsp
+        │   ├── test.sbm
+        │   ├── test_c_compilation.c
+        │   ├── test_c_lexer.c
+        │   ├── test_cpp_compilation.cpp
+        │   ├── test_ds.c
+        │   ├── test_ds_cpp.cpp
+        │   ├── test_dxt.c
+        │   ├── test_easyfont.c
+        │   ├── test_image.c
+        │   ├── test_image_write.c
+        │   ├── test_perlin.c
+        │   ├── test_png_paeth.c
+        │   ├── test_png_regress.c
+        │   ├── test_siphash.c
+        │   ├── test_sprintf.c
+        │   ├── test_truetype.c
+        │   ├── test_vorbis.c
+        │   ├── test_voxel.c
+        │   ├── textedit_sample.c
+        │   ├── tilemap_editor_integration_example.c
+        │   ├── truetype_test_win32.c
+        │   └── vorbseek
+        │       ├── vorbseek.c
+        │       └── vorbseek.dsp
+        └── tools
+            ├── README.footer.md
+            ├── README.header.md
+            ├── README.list
+            ├── build_matrix.c
+            ├── easy_font_maker.c
+            ├── make_readme.c
+            ├── make_readme.dsp
+            ├── mr.bat
+            ├── trailing_whitespace.c
+            ├── unicode
+            │   └── unicode.dsp
+            └── unicode.c
+
+85 directories, 662 files
