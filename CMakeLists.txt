@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Назва проекту
+# Project name
 project(Fragmentizer)
 
-# Встановлення стандарту C++
+# Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Встановлення змінних для директорій
+# Set directories for source, includes, and vendors
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 set(VENDOR_DIR "${CMAKE_SOURCE_DIR}/vendor")
-
-# Додавання всіх вихідних файлів проекту
+add_definitions(-DCL_HPP_TARGET_OPENCL_VERSION=300)
+# Add all project source files
 set(SRC_FILES
     "${SRC_DIR}/main.cpp"
     "${SRC_DIR}/opengl_context.cpp"
@@ -31,7 +31,7 @@ set(SRC_FILES
     "${VENDOR_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
 )
 
-# Додавання платформозалежних файлів Native File Dialog
+# Add platform-dependent Native File Dialog files
 if(WIN32)
     list(APPEND SRC_FILES
         "${VENDOR_DIR}/nativefiledialog/src/nfd_common.c"
@@ -44,7 +44,7 @@ elseif(UNIX)
     )
 endif()
 
-# Включення директорій для заголовків
+# Include directories for headers
 include_directories(
     ${INCLUDE_DIR}
     "${INCLUDE_DIR}/model"
@@ -54,9 +54,10 @@ include_directories(
     "${VENDOR_DIR}/imgui/backends"
     "${VENDOR_DIR}/nativefiledialog/src/include"
     "${VENDOR_DIR}/stb"
+    "${CMAKE_SOURCE_DIR}/vendor/OpenCL-Headers/CL"  # Add OpenCL-Headers include path
 )
 
-# Перевірка GTK
+# Check for GTK on Unix systems
 if(UNIX)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
@@ -65,14 +66,24 @@ if(UNIX)
     add_definitions(${GTK3_CFLAGS_OTHER})
 endif()
 
-# Створення виконуваного файлу
+# Add executable file
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
-# Лінкування бібліотек
+# Find OpenCL
+find_package(OpenCL REQUIRED)
+
+if(OpenCL_FOUND)
+    message(STATUS "OpenCL found at ${OpenCL_INCLUDE_DIRS}")
+    include_directories(${OpenCL_INCLUDE_DIRS})  # Include OpenCL headers
+    target_link_libraries(${PROJECT_NAME} ${OpenCL_LIBRARIES})  # Link OpenCL libraries
+else()
+    message(FATAL_ERROR "OpenCL not found")
+endif()
+
+# Link libraries based on platform
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} opengl32 glfw3 glew32)
 elseif(UNIX)
-    # Для Linux: OpenGL, GLFW, GLEW, GTK, NativeFileDialog
     find_package(OpenGL REQUIRED)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GLFW REQUIRED glfw3)
@@ -84,5 +95,6 @@ elseif(UNIX)
         GLEW
         ${GTK3_LIBRARIES}
         dl
+        ${OpenCL_LIBRARIES}  # Link OpenCL
     )
 endif()

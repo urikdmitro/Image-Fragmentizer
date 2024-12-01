@@ -7,3 +7,6 @@
 [submodule "vendor/nativefiledialog"]
 	path = vendor/nativefiledialog
 	url = https://github.com/mlabbe/nativefiledialog.git
+[submodule "vendor/OpenCL-Headers"]
+	path = vendor/OpenCL-Headers
+	url = https://github.com/KhronosGroup/OpenCL-Headers.git
