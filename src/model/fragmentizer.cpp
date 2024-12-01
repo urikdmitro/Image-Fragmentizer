@@ -8,11 +8,11 @@
 #include <string>
 #include "model/image.h"
 
-const uint32_t kUInt8Max = 256;
-const uint8_t kROffset = 0;
-const uint8_t kGOffset = 1;
-const uint8_t kBOffset = 2;
-const uint8_t kAOffset = 3;
+const std::uint32_t kUInt8Max = 256;
+const std::uint8_t kROffset = 0;
+const std::uint8_t kGOffset = 1;
+const std::uint8_t kBOffset = 2;
+const std::uint8_t kAOffset = 3;
 
 bool FragmentInfo::Less::operator()(
     const FragmentInfo &a,
@@ -60,15 +60,15 @@ const Image &Fragmentizer::GetFragment(FragmentInfo fragment_info)
     Image& fragment =
         fragments_cache.emplace(fragment_info, this->image).first->second;
 
-    uint8_t fragment_size = kUInt8Max / fragment_info.fragments_count;
-    uint8_t lower_bound = fragment_size * fragment_info.fragment_number;
-    uint8_t upper_bound = lower_bound + fragment_size;
+    std::uint8_t fragment_size = kUInt8Max / fragment_info.fragments_count;
+    std::uint8_t lower_bound = fragment_size * fragment_info.fragment_number;
+    std::uint8_t upper_bound = lower_bound + fragment_size;
 
-    for (uint32_t x = 0; x < fragment.width; x++)
+    for (std::uint32_t x = 0; x < fragment.width; x++)
     {
-        for (uint32_t y = 0; y < fragment.height; y++)
+        for (std::uint32_t y = 0; y < fragment.height; y++)
         {
-            for (uint32_t c = 0; c < fragment.channels; c++)
+            for (std::uint32_t c = 0; c < fragment.channels; c++)
             {
                 int pixel_index =
                     (y * fragment.width + x)* fragment.channels + c;

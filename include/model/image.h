@@ -1,15 +1,15 @@
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 struct Image
 {
-    uint8_t *raw_data;
-    uint32_t width;
-    uint32_t height;
-    uint32_t channels;
+    std::uint8_t *raw_data;
+    std::uint32_t width;
+    std::uint32_t height;
+    std::uint32_t channels;
 
     Image();
     Image(std::string path_to_image);

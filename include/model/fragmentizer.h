@@ -1,8 +1,8 @@
 #ifndef MODEL_FRAGMENTIZER_H_
 #define MODEL_FRAGMENTIZER_H_
 
-#include <stdint.h>
 #include <map>
+#include <cstdint>
 #include "image.h"
 
 struct FragmentInfo
@@ -12,11 +12,11 @@ struct FragmentInfo
         bool operator()(const FragmentInfo &a, const FragmentInfo &b) const;
     };
 
-    uint8_t fragments_count;
-    uint8_t fragment_number;
+    std::uint8_t fragments_count;
+    std::uint8_t fragment_number;
 
     FragmentInfo() : FragmentInfo(0, 0) {}
-    FragmentInfo(uint8_t fragments_count, uint8_t fragment_number);
+    FragmentInfo(std::uint8_t fragments_count, std::uint8_t fragment_number);
 };
 
 class Fragmentizer
@@ -24,6 +24,7 @@ class Fragmentizer
 private:
     Image image;
     std::map<FragmentInfo, Image, FragmentInfo::Less> fragments_cache;
+
 
 public:
     Fragmentizer();
