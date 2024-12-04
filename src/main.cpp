@@ -2,6 +2,7 @@
 #include <utility>
 #include <string>
 #include "opengl_context.h"
+#include "model/fragment_cutter.h"
 #include "model/fragmentizer.h"
 #include "view/gui.h"
 #include "controller/fragmentizer_controller.h"
@@ -24,9 +25,14 @@ int main() {
     std::signal(SIGINT, SigIntHandler);
 
     OpenGLContext opengl_context;
+
+    FragmentCutter default_cutter = FragmentCutter();
     Image no_image_image(Resources::GetAssetFullPath("/noimage.png"));
-    Fragmentizer fragmentizer(std::move(no_image_image));
+
+    Fragmentizer fragmentizer(default_cutter, std::move(no_image_image));
+
     FragmentizerController controller(fragmentizer);
+
     Gui gui(opengl_context, controller);
 
     while (!opengl_context.ShouldClose() && !Signal::gGotSigInt)
