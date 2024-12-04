@@ -18,6 +18,7 @@ set(SRC_FILES
     "${SRC_DIR}/opengl_context.cpp"
     "${SRC_DIR}/resources.cpp"
     "${SRC_DIR}/model/fragment_info.cpp"
+    "${SRC_DIR}/model/fragment_cutter.cpp"
     "${SRC_DIR}/model/fragmentizer.cpp"
     "${SRC_DIR}/model/image.cpp"
     "${SRC_DIR}/view/gui.cpp"

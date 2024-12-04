@@ -5,12 +5,14 @@
 #include <cstdint>
 #include <utility>
 #include <vector>
+#include "fragment_cutter.h"
 #include "fragment_info.h"
 #include "image.h"
 
 class Fragmentizer
 {
 private:
+    const IFragmentCutter &fragment_cutter;
     Image image;
     Image reserved_fragment;
     std::map<FragmentInfo, Image, FragmentInfo::Comparator> fragments_cache;
@@ -18,15 +20,10 @@ private:
     bool IsCacheFull();
     std::pair<Image&, bool> TryFindInCache(FragmentInfo fragment_info);
 
-    void CutImageToFragment(
-        FragmentInfo fragment_info,
-        Image& image
-    );
-
 public:
-    Fragmentizer();
-    Fragmentizer(const Image &image);
-    Fragmentizer(Image &&image);
+    Fragmentizer(const IFragmentCutter& fragment_cutter);
+    Fragmentizer(const IFragmentCutter& fragment_cutter, const Image &image);
+    Fragmentizer(const IFragmentCutter& fragment_cutter, Image &&image);
 
     void SetNewImage(const Image &image);
     void SetNewImage(Image &&image);
