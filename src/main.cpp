@@ -3,12 +3,16 @@
 #include <string>
 #include "opengl_context.h"
 #include "model/fragment_cutter.h"
+#include "model/opencl_fragment_cutter.h"
 #include "model/fragmentizer.h"
 #include "view/gui.h"
 #include "controller/fragmentizer_controller.h"
 #include "resources.h"
 
 #include <csignal>
+#include "easylogging++.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 namespace Signal
 {
@@ -26,12 +30,22 @@ int main() {
 
     OpenGLContext opengl_context;
 
-    FragmentCutter default_cutter = FragmentCutter();
     Image no_image_image(Resources::GetAssetFullPath("/noimage.png"));
 
-    Fragmentizer fragmentizer(default_cutter, std::move(no_image_image));
+    FragmentCutter cpu_fragment_cutter = FragmentCutter();
+    OpenCLFragmentCutter opencl_fragment_cutter = OpenCLFragmentCutter(
+        Resources::GetAssetFullPath("/fragment_cutter_kernel.cl")
+    );
 
-    FragmentizerController controller(fragmentizer);
+    Fragmentizer fragmentizer(std::move(no_image_image));
+    fragmentizer.AddFragmentCutter(cpu_fragment_cutter);
+    fragmentizer.AddFragmentCutter(opencl_fragment_cutter);
+
+    std::map<std::string, int> fragment_cutters_map;
+    fragment_cutters_map.insert({"Cpu", 0});
+    fragment_cutters_map.insert({"OpenCL", 1});
+
+    FragmentizerController controller(fragmentizer, fragment_cutters_map);
 
     Gui gui(opengl_context, controller);
 

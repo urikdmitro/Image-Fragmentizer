@@ -30,6 +30,8 @@ Gui::Gui(
             .fragment_image_size    = ImVec2(300.0f, 300.0f),
             .variance_graph_size    = ImVec2(300.0f, 300.0f),
             .intensity_graph_size   = ImVec2(300.0f, 300.0f),
+            .selected_calculation_method = 0,
+            .calculation_methods = controller.GetFragmentCuttersNames(),
         }
     )
     , input_data(validated_input_data)
@@ -197,6 +199,11 @@ void Gui::BuildInputUI()
             RerunFragmentationButtonCallback();
         }
 
+        if (ImGui::Button("Clear cache"))
+        {
+            controller.ClearCache();
+        }
+
         ImGui::TableNextColumn();
 
         ImGui::Checkbox("Red",      &(input_data.fragmentize_red_channel));
@@ -209,6 +216,39 @@ void Gui::BuildInputUI()
             255,
             255
         );
+
+        if (ImGui::BeginCombo(
+                "Calculation method: ",
+                input_data.calculation_methods[
+                    input_data.selected_calculation_method
+                ].c_str()
+            )
+        )
+        {
+            for (int i = 0; i < input_data.calculation_methods.size(); ++i)
+            {
+                bool is_selected =
+                    (input_data.selected_calculation_method == i);
+
+                if (ImGui::Selectable(
+                        input_data.calculation_methods[i].c_str(),
+                        is_selected
+                    )
+                )
+                {
+                    input_data.selected_calculation_method = i;
+                }
+
+                if (is_selected) {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+
+
+        controller.SetActiveFragmentCutter(input_data.calculation_methods[input_data.selected_calculation_method]);
 
         ImGui::EndTable();
     }

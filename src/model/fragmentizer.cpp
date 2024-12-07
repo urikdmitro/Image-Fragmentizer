@@ -1,5 +1,3 @@
-#include "model/fragmentizer.h"
-
 #include <iostream>
 #include <utility>
 #include <GL/glew.h>
@@ -10,6 +8,9 @@
 #include <tuple>
 #include <vector>
 #include <limits>
+#include <stdexcept>
+
+#include "model/fragmentizer.h"
 #include "model/image.h"
 
 const std::uint8_t kROffset = 0;
@@ -18,24 +19,18 @@ const std::uint8_t kBOffset = 2;
 const std::uint8_t kAOffset = 3;
 constexpr const std::size_t kCacheLimit = 1024 * 1024 * 1024; // 1 Gb
 
-Fragmentizer::Fragmentizer(const IFragmentCutter& fragment_cutter)
-    : fragment_cutter(fragment_cutter)
+Fragmentizer::Fragmentizer()
+    : active_fragment_cutter(0)
 { }
 
-Fragmentizer::Fragmentizer(
-    const IFragmentCutter& fragment_cutter,
-    const Image &image
-)
-    : image(image)
-    , fragment_cutter(fragment_cutter)
+Fragmentizer::Fragmentizer(const Image &image)
+    : active_fragment_cutter(0)
+    , image(image)
 { }
 
-Fragmentizer::Fragmentizer(
-    const IFragmentCutter& fragment_cutter,
-    Image &&image
-)
-    : image(std::move(image))
-    , fragment_cutter(fragment_cutter)
+Fragmentizer::Fragmentizer(Image &&image)
+    : active_fragment_cutter(0)
+    , image(std::move(image))
 { }
 
 
@@ -87,10 +82,10 @@ const Image &Fragmentizer::GetFragment(FragmentInfo fragment_info)
 
     if(!fragment.second)
     {
-        fragment_cutter.CutImageToFragment(
+        fragment_cutters[active_fragment_cutter].get().CutImageToFragment(
             fragment_info,
             fragment.first
-            );
+        );
     }
 
     return fragment.first;
@@ -99,4 +94,25 @@ const Image &Fragmentizer::GetFragment(FragmentInfo fragment_info)
 const Image& Fragmentizer::GetImage()
 {
     return image;
+}
+
+int Fragmentizer::AddFragmentCutter(const IFragmentCutter& fragment_cutter)
+{
+    fragment_cutters.push_back(fragment_cutter);
+    return fragment_cutters.size() - 1;
+}
+
+void Fragmentizer::SetActiveFragmentCutter(int index)
+{
+    if(index < 0 && index >= fragment_cutters.size())
+    {
+        throw(std::out_of_range("Wrong fragment cutter index"));
+    }
+
+    active_fragment_cutter = index;
+}
+
+void Fragmentizer::ClearCache()
+{
+    fragments_cache.clear();
 }

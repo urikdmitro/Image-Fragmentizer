@@ -30,6 +30,9 @@ private:
         ImVec2 variance_graph_size;
         ImVec2 intensity_graph_size;
 
+        int selected_calculation_method;
+        std::vector<std::string> calculation_methods;
+
         inline bool operator==(const InputData &rhs);
         inline bool operator!=(const InputData &rhs);
     };
