@@ -57,6 +57,7 @@ include_directories(
     "${VENDOR_DIR}/nativefiledialog/src/include"
     "${VENDOR_DIR}/stb"
     "${CMAKE_SOURCE_DIR}/vendor/OpenCL-Headers/CL"  # Add OpenCL-Headers include path
+    "${CMAKE_SOURCE_DIR}/vendor/easyloggingpp/src"
 )
 
 # Check for GTK on Unix systems
@@ -68,8 +69,15 @@ if(UNIX)
     add_definitions(${GTK3_CFLAGS_OTHER})
 endif()
 
+add_library(easyloggingpp STATIC "${CMAKE_SOURCE_DIR}/vendor/easyloggingpp/src/easylogging++.cc")
+
 # Add executable file
 add_executable(${PROJECT_NAME} ${SRC_FILES})
+
+target_include_directories(easyloggingpp PUBLIC
+    vendor/easyloggingpp/src
+)
+target_link_libraries(${PROJECT_NAME} easyloggingpp)
 
 # Find OpenCL
 find_package(OpenCL REQUIRED)

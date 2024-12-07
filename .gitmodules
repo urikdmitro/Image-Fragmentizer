@@ -10,3 +10,6 @@
 [submodule "vendor/OpenCL-Headers"]
 	path = vendor/OpenCL-Headers
 	url = https://github.com/KhronosGroup/OpenCL-Headers.git
+[submodule "vendor/easyloggingpp"]
+	path = vendor/easyloggingpp
+	url = https://github.com/abumq/easyloggingpp
