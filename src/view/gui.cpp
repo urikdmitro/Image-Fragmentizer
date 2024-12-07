@@ -18,10 +18,12 @@ Gui::Gui(
     : opengl_context(opengl_context)
     , controller(controller)
     , accent_color(ColorStyle::Mauve)
-    , validated_input_data(
+    , splitter_ratio(0.33f)
+    , input_data(
         InputData {
             .fragments_count = 10,
             .selected_fragment = 5,
+            .path_to_image = std::string("none"),
             .fragmentize_red_channel   = true,
             .fragmentize_green_channel = true,
             .fragmentize_blue_channel  = true,
@@ -34,15 +36,14 @@ Gui::Gui(
             .calculation_methods = controller.GetFragmentCuttersNames(),
         }
     )
-    , input_data(validated_input_data)
-    , output_data(
-        OutputData {
-            .origin_image = controller.GetImage(),
-            .fragment_image = controller.GetImage(),
-            .variance_graph = controller.GetImage(),
-            .intensity_graph = controller.GetImage(),
-        }
-    )
+    // , output_data(
+    //     OutputData {
+            // .origin_image = controller.GetImage(),
+            // .fragment_image = controller.GetImage(),
+            // .variance_graph = controller.GetImage(),
+            // .intensity_graph = controller.GetImage(),
+    //     }
+    // )
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -81,8 +82,8 @@ void Gui::UpdateFragment()
     );
 
     output_data.fragment_image = controller.GetFragment(
-        validated_input_data.fragments_count,
-        validated_input_data.selected_fragment,
+        input_data.fragments_count,
+        input_data.selected_fragment,
         mask,
         input_data.nonfragment_pixel_value
     );
@@ -90,19 +91,26 @@ void Gui::UpdateFragment()
 
 void Gui::SelectImageButtonCallback()
 {
-    validated_input_data.path_to_image = OpenFilePicker();
+    input_data.path_to_image = OpenFilePicker();
 
-    controller.SetNewImage(validated_input_data.path_to_image);
+    if(controller.SetNewImage(input_data.path_to_image))
+    {
+        input_data.path_to_image = "none";
+    }
 
     output_data.origin_image = controller.GetImage();
+    UpdateFragment();
+}
 
+void Gui::RerunFragmentation()
+{
+    output_data.origin_image = controller.GetImage();
     UpdateFragment();
 }
 
 void Gui::RerunFragmentationButtonCallback()
 {
-    output_data.origin_image = controller.GetImage();
-    UpdateFragment();
+    RerunFragmentation();
 }
 
 inline bool operator==(const ImVec2& lhs, const ImVec2& rhs)
@@ -138,120 +146,179 @@ bool Gui::InputData::operator!=(const InputData &rhs)
     return !(*this == rhs);
 }
 
-bool Gui::HasInputDataChanged()
-{
-    return input_data != validated_input_data;
-}
-
 void Gui::ValidateInputData()
 {
     if(input_data.fragments_count > 255)
+    {
         input_data.fragments_count = 255;
+    }
 
     if(input_data.fragments_count < 2)
+    {
         input_data.fragments_count = 2;
+    }
+
 
     if(input_data.selected_fragment >= input_data.fragments_count)
+    {
         input_data.selected_fragment = input_data.fragments_count - 1;
+    }
+
 
     if(input_data.selected_fragment < 0)
+    {
         input_data.selected_fragment = 0;
+    }
+
 
     if(input_data.nonfragment_pixel_value > 255)
+    {
         input_data.nonfragment_pixel_value = 255;
+    }
+
 
     if(input_data.nonfragment_pixel_value < 0)
+    {
         input_data.nonfragment_pixel_value = 0;
-
+    }
 }
 
 void Gui::BuildInputUI()
 {
-    if (ImGui::BeginTable(
-            "ImageGrid",
-            2,
-            ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable
-        )
-    ) {
-        ImGui::TableNextColumn();
 
-        if (ImGui::Button("Select Image"))
-        {
-            SelectImageButtonCallback();
-        }
+    if (ImGui::Button("Select Image"))
+    {
+        SelectImageButtonCallback();
+        has_input_data_changed = true;
+    }
 
-        ImGui::Text("Selected Image: %s", input_data.path_to_image.c_str());
-        ImGui::InputInt(
-            "Selected Fragment",
+    ImGui::SameLine();
+
+    if (ImGui::Button("Rerun"))
+    {
+        RerunFragmentationButtonCallback();
+        has_input_data_changed = true;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Clear cache"))
+    {
+        controller.ClearCache();
+        has_input_data_changed = true;
+    }
+
+
+    ImGui::Separator();
+
+    ImGui::Text("Selected Image: %s", input_data.path_to_image.c_str());
+
+    ImGui::Separator();
+
+
+    ImGui::Text("Selected Fragment");
+    if (ImGui::InputInt (
+            "##selected_fragment",
             &(input_data.selected_fragment),
             1,
             10
-        );
-        ImGui::InputInt(
-            "Number of Fragments",
+        )
+    )
+    {
+        has_input_data_changed = true;
+    }
+
+
+    ImGui::Text("Number of Fragments");
+    if (ImGui::InputInt(
+            "##fragments_count",
             &(input_data.fragments_count),
             1,
             10
-        );
+        )
+    )
+    {
+        has_input_data_changed = true;
+    }
 
-        if (ImGui::Button("Rerun"))
-        {
-            RerunFragmentationButtonCallback();
-        }
 
-        if (ImGui::Button("Clear cache"))
-        {
-            controller.ClearCache();
-        }
+    ImGui::Separator();
 
-        ImGui::TableNextColumn();
+    ImGui::Text("Channels to fragmentize");
 
-        ImGui::Checkbox("Red",      &(input_data.fragmentize_red_channel));
-        ImGui::Checkbox("Green",    &(input_data.fragmentize_green_channel));
-        ImGui::Checkbox("Blue",     &(input_data.fragmentize_blue_channel));
+    if (ImGui::Checkbox("Red", &(input_data.fragmentize_red_channel)))
+    {
+        has_input_data_changed = true;
+    }
 
-        ImGui::InputInt(
-            "Nonfragment value",
+    ImGui::SameLine();
+
+    if (ImGui::Checkbox("Green", &(input_data.fragmentize_green_channel)))
+    {
+        has_input_data_changed = true;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Checkbox("Blue", &(input_data.fragmentize_blue_channel)))
+    {
+        has_input_data_changed = true;
+    }
+
+
+    ImGui::Separator();
+
+
+    ImGui::Text("Nonfragment value");
+    if (ImGui::InputInt(
+            "##nonfragment_pixel_value",
             &(input_data.nonfragment_pixel_value),
             255,
             255
-        );
-
-        if (ImGui::BeginCombo(
-                "Calculation method: ",
-                input_data.calculation_methods[
-                    input_data.selected_calculation_method
-                ].c_str()
-            )
         )
+    )
+    {
+        has_input_data_changed = true;
+    }
+
+
+    ImGui::Separator();
+
+
+    ImGui::Text("Calculation method");
+    if (ImGui::BeginCombo(
+            "##calculation method",
+            input_data.calculation_methods[
+                input_data.selected_calculation_method
+            ].c_str()
+        )
+    )
+    {
+        for (int i = 0; i < input_data.calculation_methods.size(); ++i)
         {
-            for (int i = 0; i < input_data.calculation_methods.size(); ++i)
-            {
-                bool is_selected =
-                    (input_data.selected_calculation_method == i);
+            bool is_selected =
+                (input_data.selected_calculation_method == i);
 
-                if (ImGui::Selectable(
-                        input_data.calculation_methods[i].c_str(),
-                        is_selected
-                    )
+            if (ImGui::Selectable(
+                    input_data.calculation_methods[i].c_str(),
+                    is_selected
                 )
-                {
-                    input_data.selected_calculation_method = i;
-                }
-
-                if (is_selected) {
-                    ImGui::SetItemDefaultFocus();
-                }
+            )
+            {
+                input_data.selected_calculation_method = i;
             }
 
-            ImGui::EndCombo();
+            if (is_selected) {
+                ImGui::SetItemDefaultFocus();
+            }
         }
 
-
-        controller.SetActiveFragmentCutter(input_data.calculation_methods[input_data.selected_calculation_method]);
-
-        ImGui::EndTable();
+        ImGui::EndCombo();
+        has_input_data_changed = true;
     }
+
+
+    controller.SetActiveFragmentCutter(input_data.calculation_methods[input_data.selected_calculation_method]);
 }
 
 void Gui::BuildOutputUI()
@@ -266,7 +333,7 @@ void Gui::BuildOutputUI()
         ImGui::Text("Origin image");
         ImGui::DragFloat2(
             ("Scale##" + std::to_string(1)).c_str(),
-            reinterpret_cast<float *>(&(validated_input_data.origin_image_size.x)),
+            reinterpret_cast<float *>(&(input_data.origin_image_size.x)),
             1.0f,
             50.0f,
             500.0f,
@@ -274,14 +341,14 @@ void Gui::BuildOutputUI()
         );
         ImGui::Image(
             output_data.origin_image.GetOpenGLId(),
-            validated_input_data.origin_image_size
+            input_data.origin_image_size
         );
 
         ImGui::TableNextColumn();
         ImGui::Text("Fragment");
         ImGui::DragFloat2(
             ("Scale##" + std::to_string(2)).c_str(),
-            reinterpret_cast<float *>(&(validated_input_data.fragment_image_size.x)),
+            reinterpret_cast<float *>(&(input_data.fragment_image_size.x)),
             1.0f,
             50.0f,
             500.0f,
@@ -289,7 +356,7 @@ void Gui::BuildOutputUI()
         );
         ImGui::Image(
             output_data.fragment_image.GetOpenGLId(),
-            validated_input_data.fragment_image_size
+            input_data.fragment_image_size
         );
 
         ImGui::EndTable();
@@ -311,25 +378,45 @@ void Gui::BuildUI()
             | ImGuiWindowFlags_NoResize
     );
 
-    static float splitter_ratio = 0.3f;
+    float left_width = splitter_ratio * work_area.x;
+    float right_width = work_area.x - left_width;
 
-    float top_height = splitter_ratio * work_area.y;
-    float bottom_height = work_area.y - top_height;
+    ImGui::BeginChild(
+        "InputSection",
+        ImVec2(
+            left_width - 2 * ImGui::GetStyle().WindowPadding.x,
+            work_area.y - ImGui::GetStyle().WindowPadding.y * 2
+        ),
+        true
+    );
 
-    ImGui::BeginChild("InputSection", ImVec2(work_area.x, top_height), true);
     BuildInputUI();
     ImGui::EndChild();
 
-    ImGui::InvisibleButton("##Splitter", ImVec2(work_area.x, 8.0f));
+    ImGui::SameLine();
+
+    ImGui::Button(
+        "##Splitter",
+        ImVec2(
+            8.0f,
+            work_area.y - ImGui::GetStyle().WindowPadding.y * 2
+        )
+    );
+
     if (ImGui::IsItemActive())
     {
-        splitter_ratio += ImGui::GetIO().MouseDelta.y / work_area.y;
+        splitter_ratio += ImGui::GetIO().MouseDelta.x / work_area.x;
         splitter_ratio = std::clamp(splitter_ratio, 0.1f, 0.9f);
     }
 
+    ImGui::SameLine();
+
     ImGui::BeginChild(
         "OutputSection",
-        ImVec2(work_area.x, bottom_height),
+        ImVec2(
+            right_width - 2 * ImGui::GetStyle().WindowPadding.x,
+            work_area.y - ImGui::GetStyle().WindowPadding.y * 2
+        ),
         true
     );
     BuildOutputUI();
@@ -344,14 +431,10 @@ void Gui::OnRender()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    if(HasInputDataChanged())
+    if(has_input_data_changed)
     {
         ValidateInputData();
-        if(HasInputDataChanged())
-        {
-            validated_input_data = input_data;
-            RerunFragmentationButtonCallback();
-        }
+        RerunFragmentation();
     }
 
     BuildUI();
@@ -374,7 +457,7 @@ void Gui::SetColorStyle()
     io.Fonts->Clear();
     io.Fonts->AddFontFromFileTTF(
         Resources::GetAssetFullPath("/fonts/OpenSans-Bold.ttf").c_str(),
-        24
+        20
     );
     io.Fonts->AddFontFromFileTTF(
         Resources::GetAssetFullPath("/fonts/OpenSans-Regular.ttf").c_str(),

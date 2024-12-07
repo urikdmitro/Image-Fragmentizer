@@ -6,11 +6,23 @@ FragmentizerController::FragmentizerController(
 )
     : fragmentizer(fragmentizer)
     , fragment_cutters_indices_map(fragment_cutters_indices_map)
+    , is_image_valid(false)
 { }
 
-void FragmentizerController::SetNewImage(std::string path_to_image)
+int FragmentizerController::SetNewImage(std::string path_to_image)
 {
-    fragmentizer.SetNewImage(Image(path_to_image));
+    Image image(path_to_image);
+
+    if(image.GetSize() <= 0)
+    {
+        is_image_valid = false;
+        return -1;
+    }
+
+    fragmentizer.SetNewImage(std::move(image));
+    is_image_valid = true;
+
+    return 0;
 }
 
 Texture FragmentizerController::GetFragment(
@@ -20,6 +32,8 @@ Texture FragmentizerController::GetFragment(
     std::uint8_t nonfragment_value
 ) const
 {
+    if(!is_image_valid) return Texture();
+
     return Texture(
         fragmentizer.GetFragment(
             FragmentInfo(
@@ -34,6 +48,8 @@ Texture FragmentizerController::GetFragment(
 
 Texture FragmentizerController::GetImage() const
 {
+    if(!is_image_valid) return Texture();
+
     return Texture(fragmentizer.GetImage());
 }
 

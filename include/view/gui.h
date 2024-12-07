@@ -13,7 +13,7 @@
 class Gui
 {
 private:
-
+    float splitter_ratio;
     struct InputData
     {
         int fragments_count;
@@ -49,10 +49,10 @@ private:
     FragmentizerController &controller;
     ImVec4 accent_color;
 
-    InputData validated_input_data;
     InputData input_data;
     OutputData output_data;
 
+    bool has_input_data_changed;
     // int ShouldRedraw();
 
     std::string OpenFilePicker();
@@ -60,12 +60,12 @@ private:
     void BuildInputUI();
     void BuildOutputUI();
     void SelectImageButtonCallback();
+    void RerunFragmentation();
     void RerunFragmentationButtonCallback();
 
     void UpdateFragment();
 
     void SetColorStyle();
-    bool HasInputDataChanged();
     void ValidateInputData();
 
 public:

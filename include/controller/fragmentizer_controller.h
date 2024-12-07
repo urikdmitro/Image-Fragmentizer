@@ -12,6 +12,7 @@ class FragmentizerController
 private:
     Fragmentizer &fragmentizer;
     std::map<std::string, int> &fragment_cutters_indices_map;
+    bool is_image_valid;
 
 public:
     FragmentizerController(
@@ -19,7 +20,7 @@ public:
         std::map<std::string, int>& fragment_cutters_indices_map
     );
 
-    void SetNewImage(std::string path);
+    int SetNewImage(std::string path);
     Texture GetImage() const;
     Texture GetFragment(
         int fragments_count,
