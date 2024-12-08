@@ -25,10 +25,10 @@ private:
         bool fragmentize_blue_channel;
         int nonfragment_pixel_value;
 
-        ImVec2 origin_image_size;
-        ImVec2 fragment_image_size;
-        ImVec2 variance_graph_size;
-        ImVec2 intensity_graph_size;
+        int origin_image_scale;
+        int fragment_image_scale;
+        int variance_graph_scale;
+        int intensity_graph_scale;
 
         int selected_calculation_method;
         std::vector<std::string> calculation_methods;
@@ -59,14 +59,16 @@ private:
     void BuildUI();
     void BuildInputUI();
     void BuildOutputUI();
-    void SelectImageButtonCallback();
+    void SelectImage();
     void RerunFragmentation();
-    void RerunFragmentationButtonCallback();
+    void DrawImage(const Texture& texture, int &scale, const std::string &text);
 
     void UpdateFragment();
 
     void SetColorStyle();
     void ValidateInputData();
+
+    void AdjustImageScale();
 
 public:
     Gui(

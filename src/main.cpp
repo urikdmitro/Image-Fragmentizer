@@ -38,12 +38,12 @@ int main() {
     );
 
     Fragmentizer fragmentizer(std::move(no_image_image));
-    fragmentizer.AddFragmentCutter(cpu_fragment_cutter);
     fragmentizer.AddFragmentCutter(opencl_fragment_cutter);
+    fragmentizer.AddFragmentCutter(cpu_fragment_cutter);
 
     std::map<std::string, int> fragment_cutters_map;
-    fragment_cutters_map.insert({"Cpu", 0});
-    fragment_cutters_map.insert({"OpenCL", 1});
+    fragment_cutters_map.insert({"OpenCL", 0});
+    fragment_cutters_map.insert({"Cpu", 1});
 
     FragmentizerController controller(fragmentizer, fragment_cutters_map);
 

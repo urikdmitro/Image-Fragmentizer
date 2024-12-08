@@ -8,6 +8,7 @@
 #include "view/color_style.h"
 #include <algorithm>
 #include <bitset>
+#include <imgui_internal.h>
 
 const float kFloatEpsilon = 0.00001f;
 
@@ -28,10 +29,10 @@ Gui::Gui(
             .fragmentize_green_channel = true,
             .fragmentize_blue_channel  = true,
             .nonfragment_pixel_value  = 255,
-            .origin_image_size      = ImVec2(300.0f, 300.0f),
-            .fragment_image_size    = ImVec2(300.0f, 300.0f),
-            .variance_graph_size    = ImVec2(300.0f, 300.0f),
-            .intensity_graph_size   = ImVec2(300.0f, 300.0f),
+            .origin_image_scale     = 100,
+            .fragment_image_scale   = 100,
+            .variance_graph_scale   = 100,
+            .intensity_graph_scale  = 100,
             .selected_calculation_method = 0,
             .calculation_methods = controller.GetFragmentCuttersNames(),
         }
@@ -89,7 +90,7 @@ void Gui::UpdateFragment()
     );
 }
 
-void Gui::SelectImageButtonCallback()
+void Gui::SelectImage()
 {
     input_data.path_to_image = OpenFilePicker();
 
@@ -97,20 +98,29 @@ void Gui::SelectImageButtonCallback()
     {
         input_data.path_to_image = "none";
     }
+    else
+    {
+        RerunFragmentation();
+        AdjustImageScale();
+    }
+}
 
-    output_data.origin_image = controller.GetImage();
-    UpdateFragment();
+void Gui::AdjustImageScale()
+{
+    input_data.origin_image_scale = static_cast<int>(
+        (
+            ImGui::GetMainViewport()->WorkSize.x * (1.0f - splitter_ratio)
+            - 3 * ImGui::GetStyle().WindowPadding.x
+        )
+        / controller.GetImage().GetWidth() * 50.0f
+    );
+    input_data.fragment_image_scale = input_data.origin_image_scale;
 }
 
 void Gui::RerunFragmentation()
 {
     output_data.origin_image = controller.GetImage();
     UpdateFragment();
-}
-
-void Gui::RerunFragmentationButtonCallback()
-{
-    RerunFragmentation();
 }
 
 inline bool operator==(const ImVec2& lhs, const ImVec2& rhs)
@@ -122,28 +132,6 @@ inline bool operator==(const ImVec2& lhs, const ImVec2& rhs)
 inline bool operator!=(const ImVec2& lhs, const ImVec2& rhs)
 {
     return !(lhs == rhs);
-}
-
-bool Gui::InputData::operator==(const InputData &rhs)
-{
-    return (
-        this->fragments_count           == rhs.fragments_count              &&
-        this->selected_fragment         == rhs.selected_fragment            &&
-        this->fragmentize_red_channel   == rhs.fragmentize_red_channel      &&
-        this->fragmentize_green_channel == rhs.fragmentize_green_channel    &&
-        this->fragmentize_blue_channel  == rhs.fragmentize_blue_channel     &&
-        this->nonfragment_pixel_value   == rhs.nonfragment_pixel_value
-        // this->path_to_image        == rhs.path_to_image       &&
-        // this->origin_image_size    == rhs.origin_image_size   &&
-        // this->fragment_image_size  == rhs.fragment_image_size &&
-        // this->intensity_graph_size == rhs.intensity_graph_size&&
-        // this->variance_graph_size  == rhs.variance_graph_size
-    );
-}
-
-bool Gui::InputData::operator!=(const InputData &rhs)
-{
-    return !(*this == rhs);
 }
 
 void Gui::ValidateInputData()
@@ -188,7 +176,7 @@ void Gui::BuildInputUI()
 
     if (ImGui::Button("Select Image"))
     {
-        SelectImageButtonCallback();
+        SelectImage();
         has_input_data_changed = true;
     }
 
@@ -196,11 +184,10 @@ void Gui::BuildInputUI()
 
     if (ImGui::Button("Rerun"))
     {
-        RerunFragmentationButtonCallback();
+        RerunFragmentation();
         has_input_data_changed = true;
     }
 
-    ImGui::SameLine();
 
     if (ImGui::Button("Clear cache"))
     {
@@ -208,10 +195,27 @@ void Gui::BuildInputUI()
         has_input_data_changed = true;
     }
 
+    ImGui::SameLine();
+
+    if (ImGui::Button("Adjust scale"))
+    {
+        AdjustImageScale();
+        has_input_data_changed = true;
+    }
+
 
     ImGui::Separator();
 
+
+    ImGui::PushTextWrapPos(
+        splitter_ratio * ImGui::GetMainViewport()->WorkSize.x
+        - 2 * ImGui::GetStyle().WindowPadding.x
+    );
+
     ImGui::Text("Selected Image: %s", input_data.path_to_image.c_str());
+
+    ImGui::PopTextWrapPos();
+
 
     ImGui::Separator();
 
@@ -321,6 +325,79 @@ void Gui::BuildInputUI()
     controller.SetActiveFragmentCutter(input_data.calculation_methods[input_data.selected_calculation_method]);
 }
 
+void Gui::DrawImage(const Texture& texture, int &scale, const std::string &text)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec2 cursor_position = ImGui::GetCursorScreenPos();
+
+    ImGui::Text(text.c_str());
+    ImGui::SliderInt(
+        (std::string("Scale##") + text).c_str(),
+        &scale,
+        1,
+        100,
+        "%d%%"
+    );
+
+    ImVec2 imgui_image_size(
+        static_cast<float>(texture.GetWidth())
+            * static_cast<float>(scale) / 100.0f,
+        static_cast<float>(texture.GetHeight())
+            * static_cast<float>(scale) / 100.0f
+    );
+
+    ImGui::Image(
+        texture.GetOpenGLId(),
+        imgui_image_size
+    );
+
+    if (ImGui::BeginItemTooltip())
+    {
+        float region_size = 40.0f;
+        float region_x = io.MousePos.x - cursor_position.x - region_size * 0.5f;
+        float region_y = io.MousePos.y - cursor_position.y - region_size * 0.5f;
+        float texture_width = imgui_image_size.x;
+        float texture_height = imgui_image_size.y;
+        float zoom = 4.0f;
+
+        if (region_x < 0.0f)
+        {
+            region_x = 0.0f;
+        }
+        else if (region_x > texture_width - region_size)
+        {
+            region_x = texture_width - region_size;
+        }
+
+        if (region_y < 0.0f)
+        {
+            region_y = 0.0f;
+        }
+        else if (region_y > texture_height - region_size)
+        {
+            region_y = texture_height - region_size;
+        }
+
+        ImGui::Image(
+            texture.GetOpenGLId(),
+            ImVec2(
+                region_size * zoom,
+                region_size * zoom
+            ),
+            ImVec2(
+                (region_x) / texture_width,
+                (region_y) / texture_height
+            ),
+            ImVec2(
+                (region_x + region_size) / texture_width,
+                (region_y + region_size) / texture_height
+            )
+        );
+
+        ImGui::EndTooltip();
+    }
+}
+
 void Gui::BuildOutputUI()
 {
     if (ImGui::BeginTable(
@@ -329,35 +406,53 @@ void Gui::BuildOutputUI()
             ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable
         )
     ) {
-        ImGui::TableNextColumn();
-        ImGui::Text("Origin image");
-        ImGui::DragFloat2(
-            ("Scale##" + std::to_string(1)).c_str(),
-            reinterpret_cast<float *>(&(input_data.origin_image_size.x)),
-            1.0f,
-            50.0f,
-            500.0f,
-            "%.0f"
-        );
-        ImGui::Image(
-            output_data.origin_image.GetOpenGLId(),
-            input_data.origin_image_size
-        );
+        ImVec2 imgui_vector;
 
         ImGui::TableNextColumn();
-        ImGui::Text("Fragment");
-        ImGui::DragFloat2(
-            ("Scale##" + std::to_string(2)).c_str(),
-            reinterpret_cast<float *>(&(input_data.fragment_image_size.x)),
-            1.0f,
-            50.0f,
-            500.0f,
-            "%.0f"
+
+        DrawImage(
+            output_data.origin_image,
+            input_data.origin_image_scale,
+            "Origin image"
         );
-        ImGui::Image(
-            output_data.fragment_image.GetOpenGLId(),
-            input_data.fragment_image_size
+
+        if (ImGui::TreeNode("Image info"))
+        {
+            ImGui::Text(
+                "Width: %d\nHeight: %d\nChannels: %d\nSize: %d bytes",
+                output_data.origin_image.GetWidth(),
+                output_data.origin_image.GetHeight(),
+                output_data.origin_image.GetChannels(),
+                output_data.origin_image.GetSize()
+            );
+
+            ImGui::TreePop();
+        }
+
+        ImGui::TableNextColumn();
+
+        DrawImage(
+            output_data.fragment_image,
+            input_data.fragment_image_scale,
+            "Fragment"
         );
+
+        if (ImGui::TreeNode("Fragment info"))
+        {
+            auto bound = FragmentInfo(
+                input_data.fragments_count,
+                input_data.selected_fragment
+            ).GetBounds();
+
+            ImGui::Text(
+                "Lower bound: %d\nUpper bound: %d\nFragment size: %d",
+                bound.first,
+                bound.second,
+                bound.second - bound.first
+            );
+
+            ImGui::TreePop();
+        }
 
         ImGui::EndTable();
     }
@@ -435,6 +530,7 @@ void Gui::OnRender()
     {
         ValidateInputData();
         RerunFragmentation();
+        has_input_data_changed == false;
     }
 
     BuildUI();
@@ -521,6 +617,6 @@ void Gui::SetColorStyle()
 
     // Checkbox and Slider
     style->Colors[ImGuiCol_CheckMark]             = accent_color;
-    style->Colors[ImGuiCol_SliderGrab]            = ColorStyle::Surface2;
-    style->Colors[ImGuiCol_SliderGrabActive]      = accent_color;
+    style->Colors[ImGuiCol_SliderGrab]            = accent_color;
+    style->Colors[ImGuiCol_SliderGrabActive]      = ColorStyle::Base;
 }

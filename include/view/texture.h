@@ -18,6 +18,7 @@ private:
     GLuint id;
     GLsizei x;
     GLsizei y;
+    GLsizei channels;
 
 public:
     Texture();
@@ -36,6 +37,8 @@ public:
     GLuint GetOpenGLId() const;
     GLsizei GetWidth() const;
     GLsizei GetHeight() const;
+    GLsizei GetChannels() const;
+    GLsizei GetSize() const;
 };
 
 #endif // TEXTURE_H_

@@ -2,6 +2,7 @@
 #define MODEL_FRAGMENT_INFO_H_
 
 #include <cstdint>
+#include <limits>
 #include <vector>
 #include "channels_mask.h"
 
@@ -34,6 +35,7 @@ public:
     );
 
     std::vector<std::uint8_t> GetChannelsToFragmentize();
+    std::pair<std::uint8_t, std::uint8_t> GetBounds();
 };
 
 

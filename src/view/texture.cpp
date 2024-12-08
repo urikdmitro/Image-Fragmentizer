@@ -15,6 +15,16 @@ GLsizei Texture::GetHeight() const
     return y;
 }
 
+GLsizei Texture::GetChannels() const
+{
+    return channels;
+}
+
+GLsizei Texture::GetSize() const
+{
+    return x * y * channels;
+}
+
 void Texture::LoadFromImage(const Image &image)
 {
     if(id != 0)
@@ -31,12 +41,14 @@ void Texture::LoadFromImage(const Image &image)
 
     x = static_cast<GLsizei>(image.width);
     y = static_cast<GLsizei>(image.height);
+    channels = static_cast<GLsizei>(image.channels);
 }
 
 Texture::Texture()
     : id(0)
     , x(0)
     , y(0)
+    , channels(0)
 { }
 
 Texture::Texture(const Image &image)
@@ -49,6 +61,7 @@ Texture::Texture(const Image &image)
     )
     , x(static_cast<GLsizei>(image.width))
     , y(static_cast<GLsizei>(image.height))
+    , channels(static_cast<GLsizei>(image.channels))
 { }
 
 
@@ -56,16 +69,19 @@ Texture::Texture(Texture &&texture)
     : id(texture.id)
     , x(texture.x)
     , y(texture.y)
+    , channels(texture.channels)
 {
     texture.id = 0;
     texture.x = 0;
     texture.y = 0;
+    texture.channels = 0;
 }
 
 Texture::Texture(const Texture &texture)
     : id(DuplicateOpenGLTexture(texture.id, texture.x, texture.y))
     , x(texture.x)
     , y(texture.y)
+    , channels(texture.channels)
 { }
 
 Texture &Texture::operator=(Texture &&texture)
@@ -80,10 +96,12 @@ Texture &Texture::operator=(Texture &&texture)
         this->id = texture.id;
         this->x = texture.x;
         this->y = texture.y;
+        this->channels = texture.channels;
 
         texture.id = 0;
         texture.x = 0;
         texture.y = 0;
+        texture.channels = 0;
     }
 
     return *this;
@@ -100,6 +118,7 @@ Texture &Texture::operator=(const Texture &texture)
 
         x = texture.x;
         y = texture.y;
+        channels = texture.channels;
         id = DuplicateOpenGLTexture(texture.id, x, y);
     }
     return *this;
@@ -129,7 +148,7 @@ GLuint Texture::GenerateOpenGLTexture(
         GL_TEXTURE_MIN_FILTER,
         GL_LINEAR_MIPMAP_LINEAR
     );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

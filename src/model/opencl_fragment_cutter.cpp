@@ -177,25 +177,19 @@ void OpenCLFragmentCutter::CutImageToFragment(
     );
     CUT_IMAGE_TO_FRAGMENT_ERROR_CHECK(status, "Write image buffer");
 
-    uint lower_bound =
-        (std::numeric_limits<std::uint8_t>::max() + 1)
-        / fragment_info.fragments_count * fragment_info.fragment_number;
-
-    uint upper_bound =
-        lower_bound + (std::numeric_limits<std::uint8_t>::max() + 1)
-        / fragment_info.fragments_count;
-
-    if (fragment_info.fragments_count - 1 == fragment_info.fragment_number) {
-        upper_bound = std::numeric_limits<std::uint8_t>::max();
-    }
-
     cl::Kernel kernel(program, "cut_image_to_fragments");
     kernel.setArg(0, image_buffer);
     kernel.setArg(1, image.width);
     kernel.setArg(2, image.height);
     kernel.setArg(3, image.channels);
-    kernel.setArg(4, lower_bound);
-    kernel.setArg(5, upper_bound);
+    kernel.setArg(
+        4,
+        static_cast<unsigned int>(fragment_info.GetBounds().first)
+    );
+    kernel.setArg(
+        5,
+        static_cast<unsigned int>(fragment_info.GetBounds().second)
+    );
     kernel.setArg(6, fragment_info.nonfragment_pixel_value);
     kernel.setArg(7, static_cast<unsigned char>(fragment_info.channels_mask));
 

@@ -1,5 +1,8 @@
 #include "model/fragment_info.h"
 
+#include <cstdint>
+#include <limits>
+
 const std::uint8_t FragmentInfo::kMaxSupportedChanels = 4;
 
 FragmentInfo::FragmentInfo()
@@ -39,6 +42,29 @@ std::vector<std::uint8_t> FragmentInfo::GetChannelsToFragmentize()
     }
 
     return channels_to_fragmentize;
+}
+
+std::pair<std::uint8_t, std::uint8_t> FragmentInfo::GetBounds()
+{
+    std::pair<std::uint8_t, std::uint8_t> bounds;
+
+    // Calculating fragments size by dividing 256 on fragments count
+    std::uint8_t fragment_size =
+        (std::numeric_limits<std::uint8_t>::max() + 1)
+        / fragments_count;
+
+    bounds.first = fragment_size * fragment_number;
+
+    if(fragments_count - 1 == fragment_number)
+    {
+        bounds.second = std::numeric_limits<std::uint8_t>::max();
+    }
+    else
+    {
+        bounds.second = bounds.first + fragment_size;
+    }
+
+    return bounds;
 }
 
 bool FragmentInfo::Comparator::operator()(
