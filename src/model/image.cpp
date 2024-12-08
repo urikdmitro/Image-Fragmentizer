@@ -94,7 +94,7 @@ Image::~Image()
     stbi_image_free(raw_data);
 }
 
-size_t Image::GetSize()
+size_t Image::GetSize() const
 {
     return width * height * channels;
 }

@@ -109,11 +109,11 @@ OpenCLFragmentCutter::OpenCLFragmentCutter(std::string path_to_kernel)
 }
 
 #define CUT_IMAGE_TO_FRAGMENT_ERROR_CHECK(STATUS, STRING)                      \
-    if (status != CL_SUCCESS)                                                  \
+    if (STATUS != CL_SUCCESS)                                                  \
     {                                                                          \
         LOG(ERROR)                                                             \
             << STRING " fail: "                                                \
-            << getErrorString(status);                                         \
+            << getErrorString(STATUS);                                         \
         return;                                                                \
     }                                                                          \
     else                                                                       \
@@ -126,7 +126,8 @@ void LogFragmentInfo(FragmentInfo fragment_info, const Image& image)
     LOG(INFO)
         << "Image width: " << image.width
         << ", height: " << image.height
-        << ", channels: " << image.channels;
+        << ", channels: " << image.channels
+        << ", size: " << image.GetSize();
 
     std::stringstream channels_to_fragmentize_string;
     for (auto c : fragment_info.GetChannelsToFragmentize())
@@ -143,16 +144,13 @@ void OpenCLFragmentCutter::CutImageToFragment(
     Image& image
 ) const
 {
+    cl_int status;
+
     if (!is_opencl_initialized) {
         LOG(ERROR) << "OpenCL is not initialized";
         return;
     }
-
     LogFragmentInfo(fragment_info, image);
-
-
-    unsigned char channels_to_fragmentize[4] = {0};
-    cl_int status;
 
 
     cl::Buffer image_buffer(
@@ -179,16 +177,6 @@ void OpenCLFragmentCutter::CutImageToFragment(
     );
     CUT_IMAGE_TO_FRAGMENT_ERROR_CHECK(status, "Write image buffer");
 
-    status = queue.enqueueWriteBuffer(
-        channels_buffer,
-        CL_TRUE,
-        0,
-        4,
-        channels_to_fragmentize
-    );
-    CUT_IMAGE_TO_FRAGMENT_ERROR_CHECK(status, "Write channels buffer");
-
-
     uint lower_bound =
         (std::numeric_limits<std::uint8_t>::max() + 1)
         / fragment_info.fragments_count * fragment_info.fragment_number;
@@ -209,8 +197,7 @@ void OpenCLFragmentCutter::CutImageToFragment(
     kernel.setArg(4, lower_bound);
     kernel.setArg(5, upper_bound);
     kernel.setArg(6, fragment_info.nonfragment_pixel_value);
-    kernel.setArg(7, channels_buffer);
-    kernel.setArg(8, (uint)4);
+    kernel.setArg(7, static_cast<unsigned char>(fragment_info.channels_mask));
 
     cl::NDRange global(image.width, image.height);
 

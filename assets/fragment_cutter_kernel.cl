@@ -6,22 +6,25 @@ kernel void cut_image_to_fragments(
     const uint lower_bound,
     const uint upper_bound,
     const uchar nonfragment_pixel_value,
-    global const uchar* channels_to_fragmentize,
-    const uint num_channels_to_fragmentize
+    const uchar channels_to_fragmentize
 ) {
     int x = get_global_id(0);
     int y = get_global_id(1);
+    int pixel_index = (y * width + x) * channels;
 
     for (int c = 0; c < channels; c++) {
-        if (channels_to_fragmentize[c] == 0) {
-            return;
+        if ((channels_to_fragmentize & (1 << c)) == 0)
+        {
+            continue;
         }
 
-        int pixel_index = (y * width + x) * channels + c;
+        int channel_index = pixel_index + c;
 
-        uchar pixel_value = image_data[pixel_index];
-        if (pixel_value < lower_bound || pixel_value > upper_bound) {
-            image_data[pixel_index] = nonfragment_pixel_value;
+        uchar pixel_value = image_data[channel_index];
+
+        if (pixel_value < lower_bound || pixel_value > upper_bound)
+        {
+            image_data[channel_index] = nonfragment_pixel_value;
         }
     }
 }

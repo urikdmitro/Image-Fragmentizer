@@ -1,16 +1,16 @@
 #include "texture.h"
 
-GLuint Texture::GetOpenGLId()
+GLuint Texture::GetOpenGLId() const
 {
     return id;
 }
 
-GLsizei Texture::GetWidth()
+GLsizei Texture::GetWidth() const
 {
     return x;
 }
 
-GLsizei Texture::GetHeight()
+GLsizei Texture::GetHeight() const
 {
     return y;
 }

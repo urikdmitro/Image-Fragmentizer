@@ -21,7 +21,7 @@ struct Image
     Image &operator=(const Image &image);
     Image &operator=(Image &&image);
 
-    size_t GetSize();
+    size_t GetSize() const;
 };
 
 #endif // IMAGE_H_

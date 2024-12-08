@@ -33,9 +33,9 @@ public:
 
     void LoadFromImage(const Image &image);
 
-    GLuint GetOpenGLId();
-    GLsizei GetWidth();
-    GLsizei GetHeight();
+    GLuint GetOpenGLId() const;
+    GLsizei GetWidth() const;
+    GLsizei GetHeight() const;
 };
 
 #endif // TEXTURE_H_
