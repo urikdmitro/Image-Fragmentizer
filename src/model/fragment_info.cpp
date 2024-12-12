@@ -1,7 +1,6 @@
 #include "model/fragment_info.h"
 
 #include <cstdint>
-#include <limits>
 
 const std::uint8_t FragmentInfo::kMaxSupportedChanels = 4;
 

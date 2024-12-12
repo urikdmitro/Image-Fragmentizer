@@ -22,6 +22,8 @@ struct Image
     Image &operator=(Image &&image);
 
     size_t GetSize() const;
+
+    int SaveToFile(const std::string &path) const;
 };
 
 #endif // IMAGE_H_

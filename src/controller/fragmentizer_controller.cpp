@@ -1,4 +1,6 @@
 #include "controller/fragmentizer_controller.h"
+#include "fragmentizer_controller.h"
+#include "model/fragment_plotter.h"
 
 FragmentizerController::FragmentizerController(
     Fragmentizer &fragmentizer,
@@ -46,6 +48,27 @@ Texture FragmentizerController::GetFragment(
     );
 }
 
+int FragmentizerController::SaveFragmentToFile(
+    const std::string &path,
+    int fragments_count,
+    int fragment_number,
+    ChannelsMask::T channels_to_fragmentize,
+    std::uint8_t nonfragment_value
+) const
+{
+    if(!is_image_valid) return -1;
+
+    return fragmentizer.GetFragment(
+        FragmentInfo(
+            fragments_count,
+            fragment_number,
+            channels_to_fragmentize,
+            nonfragment_value
+        )
+    ).SaveToFile(path);
+}
+
+
 Texture FragmentizerController::GetImage() const
 {
     if(!is_image_valid) return Texture();
@@ -78,6 +101,46 @@ void FragmentizerController::SetActiveFragmentCutter(
         )->second
     );
 }
+
+IntensityGraph FragmentizerController::GetFragmentIntensityGraph(int fragments_count, int fragment_number)
+{
+    FragmentPlotter plotter(fragmentizer);
+    int nonfragment_value = fragment_number < fragments_count / 2 ? 255 : 0;
+
+    return plotter.GetIntensity(
+        fragmentizer.GetFragment(
+            FragmentInfo(
+                fragments_count,
+                fragment_number,
+                ChannelsMask::kRGB,
+                nonfragment_value
+            )
+        ),
+        nonfragment_value
+    );
+}
+
+IntensityGraph FragmentizerController::GetFragmentDensityGraph(int fragments_count, int fragment_number)
+{
+    FragmentPlotter plotter(fragmentizer);
+    int nonfragment_value = fragment_number < fragments_count / 2 ? 255 : 0;
+
+    auto image_intensity = plotter.GetIntensity(fragmentizer.GetImage(), -1);
+
+    return plotter.GetDensity(
+        fragmentizer.GetFragment(
+            FragmentInfo(
+                fragments_count,
+                fragment_number,
+                ChannelsMask::kRGB,
+                nonfragment_value
+            )
+        ),
+        nonfragment_value,
+        image_intensity
+    );
+}
+
 
 void FragmentizerController::ClearCache()
 {

@@ -2,6 +2,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 #include <cstdlib>
 #include <iostream>
 
@@ -97,4 +99,47 @@ Image::~Image()
 size_t Image::GetSize() const
 {
     return width * height * channels;
+}
+
+int Image::SaveToFile(const std::string &path) const
+{
+    auto const ext_pos = path.find_last_of('.');
+    const auto ext = path.substr(ext_pos + 1);
+
+    if (ext == "png")
+    {
+        return stbi_write_png(
+            path.c_str(),
+            width,
+            height,
+            channels,
+            reinterpret_cast<void *>(raw_data),
+            static_cast<int>(channels * width)
+        ) - 1;
+    }
+    else if (ext == "bmp")
+    {
+        return stbi_write_bmp(
+            path.c_str(),
+            width,
+            height,
+            channels,
+            reinterpret_cast<void *>(raw_data)
+        ) - 1;
+    }
+    else if (ext == "jpg")
+    {
+        return stbi_write_jpg(
+            path.c_str(),
+            width,
+            height,
+            channels,
+            reinterpret_cast<void *>(raw_data),
+            100
+        ) - 1;
+    }
+    else
+    {
+        return -1;
+    }
 }

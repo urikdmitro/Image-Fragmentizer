@@ -10,6 +10,13 @@
 #include "fragment_info.h"
 #include "image.h"
 
+enum FragmentizerStatus
+{
+    FS_IN_PROGRESS,
+    FS_DONE,
+    FS_ERROR,
+};
+
 class Fragmentizer
 {
 private:
@@ -17,6 +24,7 @@ private:
     int active_fragment_cutter;
 
     Image image;
+    FragmentizerStatus status;
 
     Image reserved_fragment;
     std::map<FragmentInfo, Image, FragmentInfo::Comparator> fragments_cache;
@@ -34,6 +42,10 @@ public:
 
     int AddFragmentCutter(const IFragmentCutter& fragment_cutter);
     void SetActiveFragmentCutter(int index);
+
+    // FragmentizerStatus GetStatus();
+    // FragmentizerStatus RunFragmentation(FragmentInfo fragment_info);
+    // const Image &GetResult();
 
     const Image &GetFragment(FragmentInfo fragment_info);
 

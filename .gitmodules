@@ -13,3 +13,6 @@
 [submodule "vendor/easyloggingpp"]
 	path = vendor/easyloggingpp
 	url = https://github.com/abumq/easyloggingpp
+[submodule "vendor/implot"]
+	path = vendor/implot
+	url = https://github.com/epezent/implot.git

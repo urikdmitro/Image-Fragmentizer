@@ -1,0 +1,5 @@
+2024-12-11 07:18:31,796 INFO [default] Using platform: Intel(R) OpenCL
+2024-12-11 07:18:31,796 WARNING [default] Warning! Found only CPU device: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz
+2024-12-11 07:18:31,796 INFO [default] Using device: Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz
+2024-12-11 07:18:31,843 INFO [default] Was read 790 bytes of OpenCL kernel
+2024-12-11 07:18:32,020 INFO [default] Kernel was builded successful

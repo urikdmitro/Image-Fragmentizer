@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <bitset>
 #include <imgui_internal.h>
+#include <numeric>
+#include "implot.h"
 
 const float kFloatEpsilon = 0.00001f;
 
@@ -52,6 +54,33 @@ Gui::Gui(
     ImGui_ImplOpenGL3_Init("#version 330");
     ImGui::StyleColorsDark();
     SetColorStyle();
+
+    // colormap_black = ImPlot::AddColormap("Black", color_data_black, 3);
+    // colormap_red = ImPlot::AddColormap("Red", color_data_red, 3);
+    // colormap_green = ImPlot::AddColormap("Green", color_data_green, 3);
+    // colormap_blue = ImPlot::AddColormap("Blue", color_data_blue, 3);
+
+    ImPlot::CreateContext();
+}
+
+std::string Gui::OpenFilePickerForSave()
+{
+    nfdchar_t *result_path = NULL;
+    nfdresult_t result = NFD_SaveDialog("*.bmp;*.jpg;*.png", NULL, &result_path);
+
+    if (result != NFD_OKAY)
+    {
+        std::cerr << "No file selected" << std::endl;
+        return "";
+    }
+    else
+    {
+        std::cout
+            << "RESULT FILE: "
+            << std::string(static_cast<char *>(result_path));
+    }
+
+    return std::string(static_cast<char *>(result_path));
 }
 
 std::string Gui::OpenFilePicker()
@@ -90,6 +119,32 @@ void Gui::UpdateFragment()
     );
 }
 
+void Gui::SaveFragment()
+{
+    std::string path_to_save = OpenFilePickerForSave();
+
+    ChannelsMask::T mask = static_cast<ChannelsMask::T>(
+        (input_data.fragmentize_red_channel
+            ? ChannelsMask::kR
+            : ChannelsMask::kNone)
+        | (input_data.fragmentize_green_channel
+            ? ChannelsMask::kG
+            : ChannelsMask::kNone)
+        | (input_data.fragmentize_blue_channel
+            ? ChannelsMask::kB
+            : ChannelsMask::kNone)
+    );
+
+
+    controller.SaveFragmentToFile(
+        path_to_save,
+        input_data.fragments_count,
+        input_data.selected_fragment,
+        mask,
+        input_data.nonfragment_pixel_value
+    );
+}
+
 void Gui::SelectImage()
 {
     input_data.path_to_image = OpenFilePicker();
@@ -112,7 +167,7 @@ void Gui::AdjustImageScale()
             ImGui::GetMainViewport()->WorkSize.x * (1.0f - splitter_ratio)
             - 3 * ImGui::GetStyle().WindowPadding.x
         )
-        / controller.GetImage().GetWidth() * 50.0f
+        / controller.GetImage().GetWidth() * 100.0f
     );
     input_data.fragment_image_scale = input_data.origin_image_scale;
 }
@@ -182,12 +237,33 @@ void Gui::BuildInputUI()
 
     ImGui::SameLine();
 
+    if (ImGui::Button("Save Fragment"))
+    {
+        SaveFragment();
+    }
+
     if (ImGui::Button("Rerun"))
     {
         RerunFragmentation();
         has_input_data_changed = true;
     }
 
+    ImGui::SameLine();
+
+    if (ImGui::Button("Build intensity"))
+    {
+        output_data.intensity_graph = controller.GetFragmentIntensityGraph(
+            input_data.fragments_count,
+            input_data.selected_fragment
+        );
+
+        output_data.density_graph = controller.GetFragmentDensityGraph(
+            input_data.fragments_count,
+            input_data.selected_fragment
+        );
+
+        has_input_data_changed = true;
+    }
 
     if (ImGui::Button("Clear cache"))
     {
@@ -402,7 +478,7 @@ void Gui::BuildOutputUI()
 {
     if (ImGui::BeginTable(
             "ImageGrid",
-            2,
+            1,
             ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable
         )
     ) {
@@ -454,6 +530,73 @@ void Gui::BuildOutputUI()
             ImGui::TreePop();
         }
 
+
+        ImGui::TableNextColumn();
+
+        if (ImPlot::BeginPlot("Intensity plot")) {
+
+            ImPlot::PushColormap(ImPlotColormap_Deep);
+            ImPlot::PlotLine(
+                "Blue channel",
+                output_data.intensity_graph.x.data(),
+                output_data.intensity_graph.b.data(),
+                output_data.intensity_graph.x.size()
+            );
+            ImPlot::PlotLine(
+                "All channels",
+                output_data.intensity_graph.x.data(),
+                output_data.intensity_graph.main.data(),
+                output_data.intensity_graph.x.size()
+            );
+            ImPlot::PlotLine(
+                "Green channel",
+                output_data.intensity_graph.x.data(),
+                output_data.intensity_graph.g.data(),
+                output_data.intensity_graph.x.size()
+            );
+            ImPlot::PlotLine(
+                "Red channel",
+                output_data.intensity_graph.x.data(),
+                output_data.intensity_graph.r.data(),
+                output_data.intensity_graph.x.size()
+            );
+            ImPlot::PopColormap();
+            ImPlot::EndPlot();
+        }
+
+
+        ImGui::TableNextColumn();
+
+        if (ImPlot::BeginPlot("Density plot")) {
+
+            ImPlot::PushColormap(ImPlotColormap_Deep);
+            ImPlot::PlotLine(
+                "Blue channel",
+                output_data.density_graph.x.data(),
+                output_data.density_graph.b.data(),
+                output_data.density_graph.x.size()
+            );
+            ImPlot::PlotLine(
+                "All channels",
+                output_data.density_graph.x.data(),
+                output_data.density_graph.main.data(),
+                output_data.density_graph.x.size()
+            );
+            ImPlot::PlotLine(
+                "Green channel",
+                output_data.density_graph.x.data(),
+                output_data.density_graph.g.data(),
+                output_data.density_graph.x.size()
+            );
+            ImPlot::PlotLine(
+                "Red channel",
+                output_data.density_graph.x.data(),
+                output_data.density_graph.r.data(),
+                output_data.density_graph.x.size()
+            );
+            ImPlot::PopColormap();
+            ImPlot::EndPlot();
+        }
         ImGui::EndTable();
     }
 }

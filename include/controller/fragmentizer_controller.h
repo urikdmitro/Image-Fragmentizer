@@ -6,6 +6,7 @@
 #include "model/fragmentizer.h"
 #include "model/image.h"
 #include "view/texture.h"
+#include "model/fragment_plotter.h"
 
 class FragmentizerController
 {
@@ -33,6 +34,17 @@ public:
     std::vector<std::string> GetFragmentCuttersNames() const;
 
     void SetActiveFragmentCutter(const std::string &fragment_cutter_name);
+
+    IntensityGraph GetFragmentIntensityGraph(int fragments_count, int fragment_number);
+    IntensityGraph GetFragmentDensityGraph(int fragments_count, int fragment_number);
+
+    int SaveFragmentToFile(
+        const std::string &path,
+        int fragments_count,
+        int fragment_number,
+        ChannelsMask::T channels_to_fragmentize = ChannelsMask::kRGB,
+        std::uint8_t nonfragment_value = 255
+    ) const;
 
     void ClearCache();
 };

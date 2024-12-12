@@ -21,6 +21,7 @@ set(SRC_FILES
     "${SRC_DIR}/model/fragment_cutter.cpp"
     "${SRC_DIR}/model/opencl_fragment_cutter.cpp"
     "${SRC_DIR}/model/fragmentizer.cpp"
+    "${SRC_DIR}/model/fragment_plotter.cpp"
     "${SRC_DIR}/model/image.cpp"
     "${SRC_DIR}/view/gui.cpp"
     "${SRC_DIR}/view/texture.cpp"
@@ -31,6 +32,8 @@ set(SRC_FILES
     "${VENDOR_DIR}/imgui/imgui_widgets.cpp"
     "${VENDOR_DIR}/imgui/backends/imgui_impl_glfw.cpp"
     "${VENDOR_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
+    "${VENDOR_DIR}/implot/implot.cpp"
+    "${VENDOR_DIR}/implot/implot_items.cpp"
 )
 
 # Add platform-dependent Native File Dialog files
@@ -54,6 +57,7 @@ include_directories(
     "${INCLUDE_DIR}/controller"
     "${VENDOR_DIR}/imgui"
     "${VENDOR_DIR}/imgui/backends"
+    "${VENDOR_DIR}/implot"
     "${VENDOR_DIR}/nativefiledialog/src/include"
     "${VENDOR_DIR}/stb"
     "${CMAKE_SOURCE_DIR}/vendor/OpenCL-Headers/CL"  # Add OpenCL-Headers include path
