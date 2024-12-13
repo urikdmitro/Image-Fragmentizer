@@ -46,15 +46,6 @@ private:
         IntensityGraph density_graph;
     };
 
-    // ImU32 color_data_black[3] = { 255, 255, 255};
-    // ImU32 color_data_red[3]   = { 255,   0,   0};
-    // ImU32 color_data_green[3] = {   0, 255,   0};
-    // ImU32 color_data_blue[3]  = {   0,   0, 255};
-    int colormap_black;
-    int colormap_red;
-    int colormap_green;
-    int colormap_blue;
-
     const OpenGLContext &opengl_context;
     FragmentizerController &controller;
     ImVec4 accent_color;

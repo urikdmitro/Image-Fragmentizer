@@ -39,14 +39,6 @@ Gui::Gui(
             .calculation_methods = controller.GetFragmentCuttersNames(),
         }
     )
-    // , output_data(
-    //     OutputData {
-            // .origin_image = controller.GetImage(),
-            // .fragment_image = controller.GetImage(),
-            // .variance_graph = controller.GetImage(),
-            // .intensity_graph = controller.GetImage(),
-    //     }
-    // )
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -54,11 +46,6 @@ Gui::Gui(
     ImGui_ImplOpenGL3_Init("#version 330");
     ImGui::StyleColorsDark();
     SetColorStyle();
-
-    // colormap_black = ImPlot::AddColormap("Black", color_data_black, 3);
-    // colormap_red = ImPlot::AddColormap("Red", color_data_red, 3);
-    // colormap_green = ImPlot::AddColormap("Green", color_data_green, 3);
-    // colormap_blue = ImPlot::AddColormap("Blue", color_data_blue, 3);
 
     ImPlot::CreateContext();
 }
@@ -192,38 +179,22 @@ inline bool operator!=(const ImVec2& lhs, const ImVec2& rhs)
 void Gui::ValidateInputData()
 {
     if(input_data.fragments_count > 255)
-    {
         input_data.fragments_count = 255;
-    }
 
     if(input_data.fragments_count < 2)
-    {
         input_data.fragments_count = 2;
-    }
-
 
     if(input_data.selected_fragment >= input_data.fragments_count)
-    {
         input_data.selected_fragment = input_data.fragments_count - 1;
-    }
-
 
     if(input_data.selected_fragment < 0)
-    {
         input_data.selected_fragment = 0;
-    }
-
 
     if(input_data.nonfragment_pixel_value > 255)
-    {
         input_data.nonfragment_pixel_value = 255;
-    }
-
 
     if(input_data.nonfragment_pixel_value < 0)
-    {
         input_data.nonfragment_pixel_value = 0;
-    }
 }
 
 void Gui::BuildInputUI()
@@ -247,6 +218,7 @@ void Gui::BuildInputUI()
         RerunFragmentation();
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip("Rerun fragmentation. It is helpfull when some error occurred");
 
     ImGui::SameLine();
 
@@ -264,12 +236,18 @@ void Gui::BuildInputUI()
 
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip("Build intensity plot");
 
     if (ImGui::Button("Clear cache"))
     {
         controller.ClearCache();
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "Helps when your computer has low memory.\n"
+        "Cache is cleared automaticaly, when new image is uploaded.\n"
+        "Default cache max size is 1Gb\n"
+    );
 
     ImGui::SameLine();
 
@@ -278,6 +256,58 @@ void Gui::BuildInputUI()
         AdjustImageScale();
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "Resizes the origin and fragment image to fit the window size"
+    );
+
+    // static bool show_benchmark = false;
+    // if (ImGui::Button("Run benchmark"))
+    // {
+    //     show_benchmark = true;
+    // }
+    // if(show_benchmark) {
+
+    //     ChannelsMask::T mask = static_cast<ChannelsMask::T>(
+    //         (input_data.fragmentize_red_channel
+    //             ? ChannelsMask::kR
+    //             : ChannelsMask::kNone)
+    //         | (input_data.fragmentize_green_channel
+    //             ? ChannelsMask::kG
+    //             : ChannelsMask::kNone)
+    //         | (input_data.fragmentize_blue_channel
+    //             ? ChannelsMask::kB
+    //             : ChannelsMask::kNone)
+    //     );
+
+    //     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    //     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+
+    //     ImGui::OpenPopup("Running benchmark");
+    //     std::chrono::milliseconds benchmark_result;
+
+    //     if (ImGui::BeginPopupModal("Running benchmark")) {
+    //         ImGui::Text("In progress");
+    //         benchmark_result = controller.RunBenchmark(
+    //             input_data.fragments_count,
+    //             true,
+    //             mask
+    //         );
+    //          if (ImGui::Button("OK", ImVec2(200, 0))) {
+    //              ImGui::CloseCurrentPopup();
+    //         }
+    //         ImGui::EndPopup();
+    //     }
+
+    //     // ImGui::OpenPopup("Benchmark result");
+    //     // if (ImGui::BeginPopupModal("Benchmark result")) {
+    //     //     ImGui::Text("Time: %lld ms", benchmark_result);
+    //     //     if (ImGui::Button("OK", ImVec2(200, 0))) {
+    //     //         ImGui::CloseCurrentPopup();
+    //     //     }
+    //     //     ImGui::EndPopup();
+    //     // }
+
+    // }
 
 
     ImGui::Separator();
@@ -307,7 +337,10 @@ void Gui::BuildInputUI()
     {
         has_input_data_changed = true;
     }
-
+    ImGui::SetItemTooltip(
+        "You can find out more information about"
+        " the calculated fragment under its image"
+    );
 
     ImGui::Text("Number of Fragments");
     if (ImGui::InputInt(
@@ -320,16 +353,26 @@ void Gui::BuildInputUI()
     {
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "You can find out more information about"
+        " the calculated fragment under its image"
+    );
 
 
     ImGui::Separator();
 
     ImGui::Text("Channels to fragmentize");
+    ImGui::SetItemTooltip(
+        "Include or exclude channels to be fragmentize. "
+    );
 
     if (ImGui::Checkbox("Red", &(input_data.fragmentize_red_channel)))
     {
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "Include or exclude channels to be fragmentize. "
+    );
 
     ImGui::SameLine();
 
@@ -337,6 +380,9 @@ void Gui::BuildInputUI()
     {
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "Include or exclude channels to be fragmentize. "
+    );
 
     ImGui::SameLine();
 
@@ -344,6 +390,9 @@ void Gui::BuildInputUI()
     {
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "Include or exclude channels to be fragmentize. "
+    );
 
 
     ImGui::Separator();
@@ -360,6 +409,9 @@ void Gui::BuildInputUI()
     {
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "Value to mark pixel which is out of fragment bounds"
+    );
 
 
     ImGui::Separator();
@@ -396,6 +448,9 @@ void Gui::BuildInputUI()
         ImGui::EndCombo();
         has_input_data_changed = true;
     }
+    ImGui::SetItemTooltip(
+        "OpenCL use video card for calculation speed up"
+    );
 
 
     controller.SetActiveFragmentCutter(input_data.calculation_methods[input_data.selected_calculation_method]);
@@ -725,20 +780,20 @@ void Gui::SetColorStyle()
     style->Colors[ImGuiCol_Text]                  = ColorStyle::Text;
     style->Colors[ImGuiCol_TextSelectedBg]        = accent_color;
     style->Colors[ImGuiCol_WindowBg]              = ColorStyle::Base;
-    style->Colors[ImGuiCol_PopupBg]               = ColorStyle::Surface2;
+    style->Colors[ImGuiCol_PopupBg]               = ColorStyle::Surface0;
     style->Colors[ImGuiCol_Border]                = ColorStyle::Surface1;
-    style->Colors[ImGuiCol_FrameBg]               = ColorStyle::Surface2;
+    style->Colors[ImGuiCol_FrameBg]               = ColorStyle::Surface0;
     style->Colors[ImGuiCol_FrameBgHovered]        = accent_color;
     style->Colors[ImGuiCol_FrameBgActive]         = accent_color;
 
     // Title
-    style->Colors[ImGuiCol_TitleBg]               = ColorStyle::Surface2;
+    style->Colors[ImGuiCol_TitleBg]               = ColorStyle::Surface0;
     style->Colors[ImGuiCol_TitleBgCollapsed]      = ColorStyle::Surface1;
     style->Colors[ImGuiCol_TitleBgActive]         = accent_color;
 
 
     // Buttons
-    style->Colors[ImGuiCol_Button]                = ColorStyle::Surface2;
+    style->Colors[ImGuiCol_Button]                = ColorStyle::Surface0;
     style->Colors[ImGuiCol_ButtonHovered]         = accent_color;
     style->Colors[ImGuiCol_ButtonActive]          = accent_color;
 
@@ -749,7 +804,7 @@ void Gui::SetColorStyle()
 
     // Scrollbar
     style->Colors[ImGuiCol_ScrollbarBg]           = ColorStyle::Surface1;
-    style->Colors[ImGuiCol_ScrollbarGrab]         = ColorStyle::Surface2;
+    style->Colors[ImGuiCol_ScrollbarGrab]         = ColorStyle::Surface0;
     style->Colors[ImGuiCol_ScrollbarGrabHovered]  = accent_color;
     style->Colors[ImGuiCol_ScrollbarGrabActive]   = accent_color;
 
