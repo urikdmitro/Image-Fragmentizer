@@ -7,6 +7,7 @@
 #include "model/image.h"
 #include "view/texture.h"
 #include "model/fragment_plotter.h"
+#include "model/benchmarker.h"
 
 class FragmentizerController
 {
@@ -45,6 +46,12 @@ public:
         ChannelsMask::T channels_to_fragmentize = ChannelsMask::kRGB,
         std::uint8_t nonfragment_value = 255
     ) const;
+
+    std::chrono::milliseconds RunBenchmark(
+        int fragments_count,
+        bool use_cache = false,
+        ChannelsMask::T channels_mask = ChannelsMask::kRGB
+    );
 
     void ClearCache();
 };

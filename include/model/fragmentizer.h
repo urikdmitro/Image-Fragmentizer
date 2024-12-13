@@ -28,6 +28,7 @@ private:
 
     Image reserved_fragment;
     std::map<FragmentInfo, Image, FragmentInfo::Comparator> fragments_cache;
+    bool is_cache_enable;
 
     bool IsCacheFull();
     std::pair<Image&, bool> TryFindInCache(FragmentInfo fragment_info);
@@ -43,15 +44,14 @@ public:
     int AddFragmentCutter(const IFragmentCutter& fragment_cutter);
     void SetActiveFragmentCutter(int index);
 
-    // FragmentizerStatus GetStatus();
-    // FragmentizerStatus RunFragmentation(FragmentInfo fragment_info);
-    // const Image &GetResult();
-
     const Image &GetFragment(FragmentInfo fragment_info);
 
     const Image &GetImage();
 
     void ClearCache();
+    void EnableCache();
+    void DisableCache();
+    bool IsCacheEnable();
 };
 
 #endif // MODEL_FRAGMENTIZER_H_

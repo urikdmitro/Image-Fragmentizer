@@ -21,16 +21,19 @@ constexpr const std::size_t kCacheLimit = 1024 * 1024 * 1024; // 1 Gb
 
 Fragmentizer::Fragmentizer()
     : active_fragment_cutter(0)
+    , is_cache_enable(true)
 { }
 
 Fragmentizer::Fragmentizer(const Image &image)
     : active_fragment_cutter(0)
     , image(image)
+    , is_cache_enable(true)
 { }
 
 Fragmentizer::Fragmentizer(Image &&image)
     : active_fragment_cutter(0)
     , image(std::move(image))
+    , is_cache_enable(true)
 { }
 
 
@@ -59,11 +62,13 @@ bool Fragmentizer::IsCacheFull()
 
 std::pair<Image&, bool> Fragmentizer::TryFindInCache(FragmentInfo fragment_info)
 {
-    if(fragments_cache.find(fragment_info) != fragments_cache.end())
-    {
+    if (
+        is_cache_enable &&
+        fragments_cache.find(fragment_info) != fragments_cache.end()
+    ) {
         return std::pair<Image&, bool>(fragments_cache[fragment_info], true);
     }
-    else if (!IsCacheFull())
+    else if (is_cache_enable && !IsCacheFull())
     {
         return std::pair<Image&, bool>(
             fragments_cache.emplace(fragment_info, this->image).first->second,
@@ -115,4 +120,19 @@ void Fragmentizer::SetActiveFragmentCutter(int index)
 void Fragmentizer::ClearCache()
 {
     fragments_cache.clear();
+}
+
+void Fragmentizer::EnableCache()
+{
+    is_cache_enable = true;
+}
+
+void Fragmentizer::DisableCache()
+{
+    is_cache_enable = false;
+}
+
+bool Fragmentizer::IsCacheEnable()
+{
+    return is_cache_enable;
 }

@@ -23,6 +23,7 @@ set(SRC_FILES
     "${SRC_DIR}/model/fragmentizer.cpp"
     "${SRC_DIR}/model/fragment_plotter.cpp"
     "${SRC_DIR}/model/image.cpp"
+    "${SRC_DIR}/model/benchmarker.cpp"
     "${SRC_DIR}/view/gui.cpp"
     "${SRC_DIR}/view/texture.cpp"
     "${SRC_DIR}/controller/fragmentizer_controller.cpp"

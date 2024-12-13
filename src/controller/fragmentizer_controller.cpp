@@ -68,6 +68,18 @@ int FragmentizerController::SaveFragmentToFile(
     ).SaveToFile(path);
 }
 
+std::chrono::milliseconds FragmentizerController::RunBenchmark(
+    int fragments_count,
+    bool use_cache,
+    ChannelsMask::T channels_mask
+)
+{
+    return Benchmarker(fragmentizer).RunFullBenchmark(
+        fragments_count,
+        use_cache,
+        channels_mask
+    );
+}
 
 Texture FragmentizerController::GetImage() const
 {
